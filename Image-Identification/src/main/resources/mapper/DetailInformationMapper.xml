@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.image.mapper.DetailInformationMapper">
+
+    <resultMap id="BaseResultMap" type="com.bf.image.pojo.DetailInformation">
+            <id property="detailId" column="detail_id" jdbcType="BIGINT"/>
+            <result property="powerSupplyStation" column="power_supply_station" jdbcType="VARCHAR"/>
+            <result property="substationName" column="substation_name" jdbcType="VARCHAR"/>
+            <result property="inspectionTeam" column="inspection_team" jdbcType="VARCHAR"/>
+            <result property="ambientTemp" column="ambient_temp" jdbcType="DOUBLE"/>
+            <result property="relativeHumidity" column="relative_humidity" jdbcType="DOUBLE"/>
+            <result property="centralHumidity" column="central_humidity" jdbcType="DOUBLE"/>
+            <result property="feeder" column="feeder" jdbcType="DOUBLE"/>
+            <result property="maxTemp" column="max_temp" jdbcType="DOUBLE"/>
+            <result property="minTemp" column="min_temp" jdbcType="DOUBLE"/>
+            <result property="avgTemp" column="avg_temp" jdbcType="DOUBLE"/>
+            <result property="emissionTemp" column="emission_temp" jdbcType="DOUBLE"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <association property="user" javaType="com.bf.image.pojo.UserInformation">
+            <id property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        </association>
+        <association property="workLeader" javaType="com.bf.image.pojo.UserInformation">
+            <id property="userId" column="word_leader_id" jdbcType="BIGINT"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        </association>
+        <association property="device" javaType="com.bf.image.pojo.DeviceInformation">
+            <id property="deviceId" column="device_id" jdbcType="BIGINT"/>
+            <result property="deviceType" column="device_type" jdbcType="INTEGER"/>
+            <result property="deviceName" column="device_name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <!-- 其他 device 字段的映射 -->
+        </association>
+        <association property="image" javaType="com.bf.image.pojo.ImageInformation">
+            <id property="imageId" column="image_id" jdbcType="BIGINT"/>
+            <result property="imageName" column="image_name" jdbcType="VARCHAR"/>
+            <result property="imagePath" column="image_path" jdbcType="VARCHAR"/>
+            <result property="imageSize" column="image_size" jdbcType="BIGINT"/>
+            <result property="creatorName" column="create_name" jdbcType="VARCHAR"/>
+            <result property="storageName" column="storage_name" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <!-- 其他 image 字段的映射 -->
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        detail_id,user_id,work_leader_id,
+        device_id,image_id,power_supply_station,
+        substation_name,inspection_team,ambient_temp,
+        relative_humidity,central_humidity,max_temp,
+        min_temp,avg_temp,emission_temp,
+        create_time,update_time
+    </sql>
+
+    <insert id="insertBySelf" parameterType="com.bf.image.pojo.DetailInformation">
+        insert into
+            detail_information
+            (detail_id, power_supply_station, substation_name, inspection_team, ambient_temp, relative_humidity, central_humidity, max_temp, min_temp, avg_temp, emission_temp, create_time, update_time, user_id, work_leader_id, device_id, image_id)
+        VALUES
+            (#{detailId}, #{powerSupplyStation}, #{substationName}, #{inspectionTeam}, #{ambientTemp}, #{relativeHumidity}, #{centralHumidity}, #{maxTemp}, #{minTemp}, #{avgTemp}, #{emissionTemp}, #{createTime}, #{updateTime}, #{user.userId}, #{workLeader.userId}, #{device.deviceId}, #{image.imageId})
+    </insert>
+
+    <select id="selectByDeviceId" resultMap="BaseResultMap" resultType="detailInformation">
+        SELECT
+            detail_id,
+            power_supply_station,
+            substation_name,
+            inspection_team,
+            ambient_temp,
+            relative_humidity,
+            central_humidity,
+            max_temp,
+            min_temp,
+            avg_temp,
+            emission_temp,
+            create_time,
+            update_time,
+            user_id,
+            work_leader_id,
+            device_id,
+            image_id
+        FROM detail_information d
+        WHERE d.device_id = #{deviceId}
+        ORDER BY d.create_time desc
+        LIMIT 1
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM detail_information
+        <where>
+            <if test="device.deviceId != null">
+                AND device_id = #{device.deviceId}
+            </if>
+            <if test="powerSupplyStation != null">
+                AND power_supply_station = #{powerSupplyStation}
+            </if>
+            <if test="feeder != null">
+                AND feeder = #{feeder}
+            </if>
+            <if test="substationName != null">
+                AND substation_name = #{substationName}
+            </if>
+            <if test="inspectionTeam != null">
+                AND inspection_team = #{inspectionTeam}
+            </if>
+            <if test="workLeader.userId != null">
+                AND word_leader_id = #{workLeader.userId}
+            </if>
+            <if test="maxTemp != null">
+                AND max_temp &gt; #{maxTemp}
+            </if>
+            <if test="createTime != null">
+                AND create_time &gt; #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+            detail_id,
+            power_supply_station,
+            substation_name,
+            inspection_team,
+            ambient_temp,
+            relative_humidity,
+            central_humidity,
+            max_temp,
+            min_temp,
+            avg_temp,
+            emission_temp,
+            create_time,
+            update_time,
+            user_id,
+            work_leader_id,
+            device_id,
+            image_id
+        FROM detail_information
+    </select>
+</mapper>
