@@ -21,6 +21,7 @@ import com.bf.image.utils.UUIDUtil;
 import com.bf.image.vo.DetailInformationVo;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -281,6 +282,38 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
                 .collect(Collectors.toList());
 
         return filterList;
+    }
+
+    @Override
+    public DetailInformation convert(DetailInformationVo detailInformationVo) {
+        DetailInformation detailInformation = new DetailInformation();
+        DeviceInformation deviceInformation = new DeviceInformation();
+
+        UserInformation userInformation = new UserInformation();
+        ImageInformation imageInformation = new ImageInformation();
+
+        deviceInformation.setDeviceId(detailInformationVo.getDeviceId());
+        deviceInformation.setDeviceName(detailInformationVo.getDeviceName());
+        deviceInformation.setDeviceType(detailInformationVo.getDeviceType());
+
+        userInformation.setUserId(detailInformationVo.getUserId());
+        userInformation.setUsername(detailInformationVo.getUsername());
+
+        imageInformation.setImageId(detailInformationVo.getImageId());
+        imageInformation.setImageName(detailInformationVo.getImageName());
+        imageInformation.setImagePath(detailInformationVo.getImagePath());
+        imageInformation.setImageSize(detailInformationVo.getImageSize());
+        imageInformation.setCreatorName(detailInformationVo.getCreatorName());
+        imageInformation.setStorageName(detailInformationVo.getStorageName());
+
+
+        BeanUtils.copyProperties(detailInformationVo, detailInformation);
+
+        detailInformation.setUser(userInformation);
+        detailInformation.setDevice(deviceInformation);
+        detailInformation.setImage(imageInformation);
+
+        return detailInformation;
     }
 
 }

@@ -21,4 +21,6 @@ public interface DetailInformationService extends IService<DetailInformation> {
     DetailInformation getNewestInfo(DetailInformation detailInformation);
 
     List<DetailInformation> getDetailInfoByCondition(DetailInformationVo detailInformationVo);
+
+    DetailInformation convert(DetailInformationVo detailInformationVo);
 }

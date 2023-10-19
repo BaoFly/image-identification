@@ -21,18 +21,19 @@ public class DetailController {
     private DetailInformationService detailService;
 
     @PostMapping("/upload")
-    public ResultJson uploadInfo(@RequestBody DetailInformation detailInformation,
+    public ResultJson uploadInfo(@RequestBody DetailInformationVo detailInformationVo,
                                  HttpServletRequest request) {
         ServletContext servletContext = request.getServletContext();
         String fullUrl = servletContext.getRealPath("/");
+        DetailInformation detailInformation = detailService.convert(detailInformationVo);
         detailService.uploadInfo(detailInformation, fullUrl);
         return ResultJson.success();
     }
 
     @GetMapping("/newestInfo")
-    public ResultJson<DetailInformation> getNewestInfo(@RequestBody DetailInformation detailInformation) {
-        detailInformation = detailService.getNewestInfo(detailInformation);
-        return ResultJson.success(detailInformation);
+    public ResultJson<DetailInformation> getNewestInfo(@RequestBody DetailInformationVo detailInformationVo) {
+        DetailInformation detailInformation = detailService.convert(detailInformationVo);
+        return ResultJson.success(detailService.getNewestInfo(detailInformation));
     }
 
     @GetMapping("/condition")
