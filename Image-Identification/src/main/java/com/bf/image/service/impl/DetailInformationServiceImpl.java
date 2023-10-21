@@ -316,6 +316,11 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         return detailInformation;
     }
 
+    @Override
+    public List<DetailInformation> getAllRecord() {
+        return detailMapper.selectList(null);
+    }
+
 }
 
 

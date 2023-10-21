@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/info")
@@ -23,6 +24,9 @@ public class DetailController {
     @PostMapping("/upload")
     public ResultJson uploadInfo(@RequestBody DetailInformationVo detailInformationVo,
                                  HttpServletRequest request) {
+        if (Objects.isNull(detailInformationVo)) {
+            return ResultJson.success(null);
+        }
         ServletContext servletContext = request.getServletContext();
         String fullUrl = servletContext.getRealPath("/");
         DetailInformation detailInformation = detailService.convert(detailInformationVo);
@@ -32,12 +36,18 @@ public class DetailController {
 
     @GetMapping("/newestInfo")
     public ResultJson<DetailInformation> getNewestInfo(@RequestBody DetailInformationVo detailInformationVo) {
+        if (Objects.isNull(detailInformationVo)) {
+            return ResultJson.success(null);
+        }
         DetailInformation detailInformation = detailService.convert(detailInformationVo);
         return ResultJson.success(detailService.getNewestInfo(detailInformation));
     }
 
     @GetMapping("/condition")
     public ResultJson<List<DetailInformation>> getDetailInfoByCondition(@RequestBody DetailInformationVo detailInformationVo) {
+        if (Objects.isNull(detailInformationVo)) {
+            return ResultJson.success(detailService.getAllRecord());
+        }
         List<DetailInformation> detailInfoPage = detailService.getDetailInfoByCondition(detailInformationVo);
         return ResultJson.success(detailInfoPage);
     }
