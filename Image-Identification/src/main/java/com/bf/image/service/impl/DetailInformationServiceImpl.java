@@ -217,6 +217,9 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     @Override
     public DetailInformation getNewestInfo(DetailInformation detailInformation) {
         Long deviceId = detailInformation.getDevice().getDeviceId();
+        if (Objects.isNull(deviceId)) {
+            return null;
+        }
         DetailInformation detailInfo = detailMapper.selectByDeviceId(deviceId);
         Long imageId = detailInfo.getImage().getImageId();
         ImageInformation imageInfo = imageMapper.selectOne(new LambdaQueryWrapper<ImageInformation>().eq(ImageInformation::getImageId, imageId));
@@ -242,6 +245,9 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     @Override
     public List<DetailInformation> getDetailInfoByCondition(DetailInformationVo detailInfo) {
         List<DetailInformation> allDetailInfo = detailMapper.selectAll();
+        if (Objects.isNull(allDetailInfo)) {
+            return null;
+        }
         allDetailInfo.stream().forEach(detailInformation -> {
             UserInformation userInformation = userMapper.selectById(detailInformation.getUser().getUserId());
             DeviceInformation deviceInformation = deviceMapper.selectById(detailInformation.getDevice().getDeviceId());
