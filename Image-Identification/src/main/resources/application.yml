@@ -10,7 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: 1234
+    password: baofly913.
 
   # 配置热部署
   devtools:
@@ -28,3 +28,9 @@ mybatis-plus:
       # 0 代表未删除，不配置默认是0，也可修改配置
       logic-not-delete-value: 0
   type-aliases-package: com.bf.image.pojo
+
+# 开启swagger
+springfox:
+  documentation:
+    swagger-ui:
+      enabled: true
