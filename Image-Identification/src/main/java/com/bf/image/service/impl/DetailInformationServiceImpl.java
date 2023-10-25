@@ -3,6 +3,7 @@ package com.bf.image.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.constant.CommonConstant;
@@ -131,6 +132,9 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
             ImageInformation imageInfo = new ImageInformation();
             // 转成字符串类型
             String imageStr = (String) imageObj;
+            if (!Base64.isBase64(imageStr)) {
+                throw new CustomException("无效的Base64编码");
+            }
             // 解析 Base64 字符串为字节数组
             byte[] imageBytes = Base64.decodeBase64(imageStr.replace("data:image/jpeg;base64,", ""));
             for (int i = 0; i < imageBytes.length; ++i) {
@@ -221,10 +225,19 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
             return null;
         }
         DetailInformation detailInfo = detailMapper.selectByDeviceId(deviceId);
+        if (Objects.isNull(detailInfo)) {
+            throw new CustomException(CommonConstant.FAIL_CODE, "该设备下无信息");
+        }
         Long imageId = detailInfo.getImage().getImageId();
         ImageInformation imageInfo = imageMapper.selectOne(new LambdaQueryWrapper<ImageInformation>().eq(ImageInformation::getImageId, imageId));
+        if (Objects.isNull(imageInfo)) {
+            throw new CustomException(CommonConstant.FAIL_CODE, "无图片信息");
+        }
         String imagePath = imageInfo.getImagePath();
         String storageName = imageInfo.getStorageName();
+        if (StringUtils.isBlank(imagePath) || StringUtils.isBlank(storageName)) {
+            throw new CustomException(CommonConstant.FAIL_CODE, "图片路径异常");
+        }
         String fileFullName = imagePath + "\\" + storageName + CommonConstant.IMAGE_TYPE;
 
         // 读取图片文件
