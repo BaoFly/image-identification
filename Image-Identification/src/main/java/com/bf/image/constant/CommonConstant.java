@@ -2,7 +2,9 @@ package com.bf.image.constant;
 
 public interface CommonConstant {
 
-    public static final int FAIL_CODE = 0;
+    public static final int FAIL_CODE = -1;
+
+    public static final int SUCCESS_CODE = 0;
 
     public static final String USER_INFO_ERROR_MSG = "用户名或密码不能为空"
             ;

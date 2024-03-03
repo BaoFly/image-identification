@@ -83,6 +83,8 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
         Date updateTime = TimeUtil.getCurrentTime();
 
         userInformation.setUserId(uuid);
+        userInformation.setUsername(username);
+        userInformation.setPassword(password);
         userInformation.setCreateTime(currentTime);
         userInformation.setUpdateTime(updateTime);
 

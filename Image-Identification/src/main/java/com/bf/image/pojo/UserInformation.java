@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -12,6 +16,9 @@ import lombok.Data;
  */
 @TableName(value ="user_information")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserInformation implements Serializable {
     /**
      * 用户表ID

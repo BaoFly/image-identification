@@ -18,7 +18,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(value = CustomException.class)
     @ResponseBody
     public ResultJson customRuntimeException(HttpServletRequest request, CustomException e){
-        return ResultJson.fail(e.getCode(), e.getMessage());
+        return ResultJson.fail(e.getMessage());
     }
 
 
@@ -30,7 +30,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResultJson defaultErrorHandler(HttpServletRequest request, Exception e){
-        return ResultJson.fail(999, e.getMessage());
+        return ResultJson.fail(e.getMessage());
     }
 
 

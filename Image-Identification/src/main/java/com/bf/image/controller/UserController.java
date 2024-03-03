@@ -32,7 +32,7 @@ public class UserController {
     @PostMapping("/add")
     public ResultJson userAdd(@RequestBody UserInformation userInformation) {
         if (Objects.isNull(userInformation)) {
-            return ResultJson.success(null);
+            return ResultJson.fail(null);
         }
         userService.add(userInformation);
         return ResultJson.success();

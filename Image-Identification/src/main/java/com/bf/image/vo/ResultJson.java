@@ -1,5 +1,6 @@
 package com.bf.image.vo;
 
+import com.bf.image.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,15 +23,18 @@ public class ResultJson<T> {
         }
 
         public static <T> ResultJson<T> success() {
-            return of(200, null, "Success");
+            return of(CommonConstant.SUCCESS_CODE, null, "Success");
+        }
+        public static <T> ResultJson<T> success(T data, String msg) {
+            return of(CommonConstant.SUCCESS_CODE, data, msg);
         }
 
         public static <T> ResultJson<T> success(T data) {
-            return of(200, data, "Success");
+            return of(CommonConstant.SUCCESS_CODE, data, "Success");
         }
 
-        public static <T> ResultJson<T> fail(int code, String msg) {
-            return of(code, null, msg);
+        public static <T> ResultJson<T> fail(String msg) {
+            return of(CommonConstant.FAIL_CODE, null, msg);
         }
 
 

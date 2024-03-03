@@ -32,7 +32,7 @@ public class DetailController {
     public ResultJson uploadInfo(@RequestBody DetailInformationVo detailInformationVo,
                                  HttpServletRequest request) {
         if (ObjectUtils.allNull(detailInformationVo)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, "值不能全为0");
+            return ResultJson.fail("值不能全为0");
         }
         ServletContext servletContext = request.getServletContext();
         String fullUrl = servletContext.getRealPath("/");
@@ -45,7 +45,7 @@ public class DetailController {
     @GetMapping("/newestInfo")
     public ResultJson<DetailInformation> getNewestInfo(@RequestBody DetailInformationVo detailInformationVo) {
         if (ObjectUtils.allNull(detailInformationVo)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, "值不能全为0");
+            return ResultJson.fail("值不能全为0");
         }
         DetailInformation detailInformation = detailService.convert(detailInformationVo);
         return ResultJson.success(detailService.getNewestInfo(detailInformation));
