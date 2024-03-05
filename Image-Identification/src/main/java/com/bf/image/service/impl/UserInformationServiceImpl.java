@@ -13,9 +13,11 @@ import com.bf.image.utils.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,27 +34,25 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
 
 
     @Override
-    public void checkUserInfo(UserInformation userInformation) {
-        // 拿到去除前后空格的用户名和密码
-        String username = userInformation.getUsername().trim();
-        String password = userInformation.getPassword().trim();
+    public void checkUserInfo(String username, String password) {
 
-        // 判断是否为空
-        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.USER_INFO_ERROR_MSG);
-        }
-
-        // 查数据库
+        // 1 查数据库
         LambdaQueryWrapper<UserInformation> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserInformation::getUsername, username)
-                .eq(UserInformation::getPassword, password);
-        UserInformation record = userMapper.selectOne(queryWrapper);
+        queryWrapper.eq(UserInformation::getUsername, username);
+        List<UserInformation> users = userMapper.selectList(queryWrapper);
 
-        // 如果没有该用户
-        if (Objects.isNull(record)) {
+        // 2 看是否有该用户名
+        if (CollectionUtils.isEmpty(users)) {
             throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.USER_NOT_EXIST_MSG);
         }
 
+        // 3 看是否有该密码的用户
+        UserInformation userInformation = users.stream().filter(user -> user.getPassword().equals(password)).findFirst().orElse(null);
+
+        // 如果没有该用户
+        if (Objects.isNull(userInformation)) {
+            throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.PASSWORD_ERROR);
+        }
 
     }
 

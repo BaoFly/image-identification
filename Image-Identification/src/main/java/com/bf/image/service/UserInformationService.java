@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface UserInformationService extends IService<UserInformation> {
 
 
-    void checkUserInfo(UserInformation userInformation);
+    void checkUserInfo(String userName, String password);
 
     void add(UserInformation userInformation);
 }

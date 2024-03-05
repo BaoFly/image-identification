@@ -22,6 +22,7 @@ import java.util.Objects;
 @Api(tags = "detailInformation相关接口")
 @RestController
 @RequestMapping("/info")
+@CrossOrigin
 public class DetailController {
 
     @Autowired

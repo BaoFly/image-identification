@@ -6,9 +6,10 @@ public interface CommonConstant {
 
     public static final int SUCCESS_CODE = 0;
 
-    public static final String USER_INFO_ERROR_MSG = "用户名或密码不能为空"
-            ;
+    public static final String USER_INFO_ERROR_MSG = "用户名或密码不能为空";
     public static final String USER_NOT_EXIST_MSG = "用户不存在";
+
+    public static final String PASSWORD_ERROR = "密码错误";
 
     public static final String USER_EXIST_MSG = "用户已存在";
 
