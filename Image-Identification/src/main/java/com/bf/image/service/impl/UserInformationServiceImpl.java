@@ -91,6 +91,8 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
         userMapper.insert(userInformation);
 
     }
+
+
 }
 
 

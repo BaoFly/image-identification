@@ -7,10 +7,11 @@ server:
 # 数据库连接信息
 spring:
   datasource:
+
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: baofly913.
+    password: 1234
 
   # 配置热部署
   devtools:
@@ -21,6 +22,9 @@ spring:
 
 # 配置Mybatis-plus逻辑删除
 mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       # 1 代表已删除，不配置默认是1，也可修改配置

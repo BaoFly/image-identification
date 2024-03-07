@@ -1,5 +1,6 @@
 package com.bf.image.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bf.image.constant.CommonConstant;
@@ -21,7 +22,6 @@ import java.util.Objects;
 
 @Api(tags = "detailInformation相关接口")
 @RestController
-@RequestMapping("/info")
 @CrossOrigin
 public class DetailController {
 
@@ -50,6 +50,14 @@ public class DetailController {
         }
         DetailInformation detailInformation = detailService.convert(detailInformationVo);
         return ResultJson.success(detailService.getNewestInfo(detailInformation));
+    }
+
+    @ApiOperation("分页查询")
+    @PostMapping("detail/pageVo")
+    public ResultJson<?> pageVo(@RequestBody DetailInformationVo detailInformationVo) {
+        System.out.println(JSONObject.toJSONString(detailInformationVo));
+        IPage<DetailInformation> page = detailService.selectPage(detailInformationVo);
+        return ResultJson.success(page);
     }
 
     @ApiOperation("根据条件查询对应数据 条件为空返回所有detailInformation")

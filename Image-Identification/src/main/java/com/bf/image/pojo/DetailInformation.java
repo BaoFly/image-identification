@@ -58,6 +58,11 @@ public class DetailInformation implements Serializable {
     private String substationName;
 
     /**
+     * 配电房名称
+     */
+    private String destributionRoomName;
+
+    /**
      * 巡检班组
      */
     private String inspectionTeam;

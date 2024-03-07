@@ -25,4 +25,6 @@ public interface DetailInformationService extends IService<DetailInformation> {
     DetailInformation convert(DetailInformationVo detailInformationVo);
 
     List<DetailInformation> getAllRecord();
+
+    IPage<DetailInformation> selectPage(DetailInformationVo detailInformationVo);
 }

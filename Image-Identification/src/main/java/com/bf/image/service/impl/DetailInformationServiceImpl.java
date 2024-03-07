@@ -75,7 +75,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
         Date currentTime = TimeUtil.getCurrentTime();
         detailInformation.setCreateTime(currentTime);
-        detailInformation.setUpdateTime(currentTime);
+        detailInformation.setCreateTime(currentTime);
 
         // 调用封装好的方法，直接返回对应image对象
         ImageInformation imageInfo = loadLocal(imageObj, fullUrl, user.getUsername());
@@ -285,22 +285,22 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 //        Double maxTemp = detailInfo.getMaxTemp();
 //        Date createTime = detailInfo.getCreateTime();
 
+//
+//        List<DetailInformation> filterList = allDetailInfo.stream()
+//                .filter(detail -> (detailInfo.getUser().getUsername() == null || detail.getUser().getUsername().equals(detailInfo.getUser().getUsername())))
+//                .filter(detail -> (detailInfo.getDeviceId() == null || detail.getDevice().getDeviceId().equals(detailInfo.getDeviceId())))
+//                .filter(detail -> (detailInfo.getDeviceType() == null || detail.getDevice().getDeviceType().equals(detailInfo.getDeviceType())))
+//                .filter(detail -> (detailInfo.getPowerSupplyStation() == null || detail.getPowerSupplyStation().equals(detail.getPowerSupplyStation())))
+//                .filter(detail -> (detailInfo.getFeeder() == null || detail.getFeeder().equals(detail.getFeeder())))
+//                .filter(detail -> (detailInfo.getSubstationName() == null || detail.getSubstationName().equals(detail.getSubstationName())))
+//                .filter(detail -> (detailInfo.getInspectionTeam() == null || detail.getInspectionTeam().equals(detail.getInspectionTeam())))
+//                .filter(detail -> (detailInfo.getWorkLeaderId() == null || detail.getWorkLeader().getUserId().equals(detailInfo.getWorkLeaderId())))
+//                .filter(detail -> (detailInfo.getDeviceName() == null || detail.getDevice().getDeviceName().equals(detailInfo.getDeviceName())))
+//                .filter(detail -> (detailInfo.getMaxTemp() == null || detail.getMaxTemp() > detailInfo.getMaxTemp()))
+//                .filter(detail -> (detailInfo.getCreateTime() == null || detail.getCreateTime().after(detailInfo.getCreateTime())))
+//                .collect(Collectors.toList());
 
-        List<DetailInformation> filterList = allDetailInfo.stream()
-                .filter(detail -> (detailInfo.getUsername() == null || detail.getUser().getUsername().equals(detailInfo.getUsername())))
-                .filter(detail -> (detailInfo.getDeviceId() == null || detail.getDevice().getDeviceId().equals(detailInfo.getDeviceId())))
-                .filter(detail -> (detailInfo.getDeviceType() == null || detail.getDevice().getDeviceType().equals(detailInfo.getDeviceType())))
-                .filter(detail -> (detailInfo.getPowerSupplyStation() == null || detail.getPowerSupplyStation().equals(detail.getPowerSupplyStation())))
-                .filter(detail -> (detailInfo.getFeeder() == null || detail.getFeeder().equals(detail.getFeeder())))
-                .filter(detail -> (detailInfo.getSubstationName() == null || detail.getSubstationName().equals(detail.getSubstationName())))
-                .filter(detail -> (detailInfo.getInspectionTeam() == null || detail.getInspectionTeam().equals(detail.getInspectionTeam())))
-                .filter(detail -> (detailInfo.getWorkLeaderId() == null || detail.getWorkLeader().getUserId().equals(detailInfo.getWorkLeaderId())))
-                .filter(detail -> (detailInfo.getDeviceName() == null || detail.getDevice().getDeviceName().equals(detailInfo.getDeviceName())))
-                .filter(detail -> (detailInfo.getMaxTemp() == null || detail.getMaxTemp() > detailInfo.getMaxTemp()))
-                .filter(detail -> (detailInfo.getCreateTime() == null || detail.getCreateTime().after(detailInfo.getCreateTime())))
-                .collect(Collectors.toList());
-
-        return filterList;
+        return null;
     }
 
     @Override
@@ -311,26 +311,26 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         UserInformation userInformation = new UserInformation();
         ImageInformation imageInformation = new ImageInformation();
 
-        deviceInformation.setDeviceId(detailInformationVo.getDeviceId());
-        deviceInformation.setDeviceName(detailInformationVo.getDeviceName());
-        deviceInformation.setDeviceType(detailInformationVo.getDeviceType());
-
-        userInformation.setUserId(detailInformationVo.getUserId());
-        userInformation.setUsername(detailInformationVo.getUsername());
-
-        imageInformation.setImageId(detailInformationVo.getImageId());
-        imageInformation.setImageName(detailInformationVo.getImageName());
-        imageInformation.setImagePath(detailInformationVo.getImagePath());
-        imageInformation.setImageSize(detailInformationVo.getImageSize());
-        imageInformation.setCreatorName(detailInformationVo.getCreatorName());
-        imageInformation.setStorageName(detailInformationVo.getStorageName());
-
-
-        BeanUtils.copyProperties(detailInformationVo, detailInformation);
-
-        detailInformation.setUser(userInformation);
-        detailInformation.setDevice(deviceInformation);
-        detailInformation.setImage(imageInformation);
+//        deviceInformation.setDeviceId(detailInformationVo.getDeviceId());
+//        deviceInformation.setDeviceName(detailInformationVo.getDeviceName());
+//        deviceInformation.setDeviceType(detailInformationVo.getDeviceType());
+//
+//        userInformation.setUserId(detailInformationVo.getUserId());
+//        userInformation.setUsername(detailInformationVo.getUsername());
+//
+//        imageInformation.setImageId(detailInformationVo.getImageId());
+//        imageInformation.setImageName(detailInformationVo.getImageName());
+//        imageInformation.setImagePath(detailInformationVo.getImagePath());
+//        imageInformation.setImageSize(detailInformationVo.getImageSize());
+//        imageInformation.setCreatorName(detailInformationVo.getCreatorName());
+//        imageInformation.setStorageName(detailInformationVo.getStorageName());
+//
+//
+//        BeanUtils.copyProperties(detailInformationVo, detailInformation);
+//
+//        detailInformation.setUser(userInformation);
+//        detailInformation.setDevice(deviceInformation);
+//        detailInformation.setImage(imageInformation);
 
         return detailInformation;
     }
@@ -338,6 +338,23 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     @Override
     public List<DetailInformation> getAllRecord() {
         return detailMapper.selectList(null);
+    }
+
+    @Override
+    public IPage<DetailInformation> selectPage(DetailInformationVo detailInformationVo) {
+        Integer pageSize = detailInformationVo.getPageSize();
+        Page<DetailInformation> page = new Page<>(detailInformationVo.getCurrent(), pageSize);
+        IPage<DetailInformation> iPage = detailMapper.queryPage(page, detailInformationVo);
+        Long count = detailMapper.selectAll().stream().collect(Collectors.counting());
+        long pages = 0;
+        if (count % pageSize == 0) {
+            pages = count / pageSize;
+        } else {
+            pages = count / pageSize + 1;
+        }
+        iPage.setPages(pages);
+        iPage.setTotal(count);
+        return iPage;
     }
 
 }

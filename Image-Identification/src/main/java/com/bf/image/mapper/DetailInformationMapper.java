@@ -6,6 +6,7 @@ import com.bf.image.pojo.DetailInformation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bf.image.vo.DetailInformationVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,6 +26,9 @@ public interface DetailInformationMapper extends BaseMapper<DetailInformation> {
     List<DetailInformation> selectByCondition(DetailInformation detailInformation);
 
     List<DetailInformation> selectAll();
+
+    IPage<DetailInformation> queryPage(@Param("page") Page<DetailInformation> page,
+                                      @Param("detailInformationVo") DetailInformationVo detailInformationVo);
 
 }
 
