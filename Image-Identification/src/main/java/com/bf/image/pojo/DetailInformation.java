@@ -30,12 +30,12 @@ public class DetailInformation implements Serializable {
     /**
      * 用户
      */
-    private UserInformation user;
+    private String username;
 
     /**
      * 工作负责人
      */
-    private UserInformation workLeader;
+    private String workLeaderName;
 
     /**
      * 设备
@@ -60,7 +60,7 @@ public class DetailInformation implements Serializable {
     /**
      * 配电房名称
      */
-    private String destributionRoomName;
+    private String distributionRoomName;
 
     /**
      * 巡检班组

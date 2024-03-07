@@ -66,8 +66,8 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     public void uploadInfo(DetailInformation detailInformation, String fullUrl) {
         // 拿到对应的封装的实体类
         Object imageObj = detailInformation.getImageObj();
-        UserInformation user = detailInformation.getUser();
-        UserInformation workLeader = detailInformation.getWorkLeader();
+        String username = detailInformation.getUsername();
+        String workLeaderName = detailInformation.getWorkLeaderName();
         DeviceInformation device = detailInformation.getDevice();
 
         Long detailId = UUIDUtil.generateUUID();
@@ -78,7 +78,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         detailInformation.setCreateTime(currentTime);
 
         // 调用封装好的方法，直接返回对应image对象
-        ImageInformation imageInfo = loadLocal(imageObj, fullUrl, user.getUsername());
+        ImageInformation imageInfo = loadLocal(imageObj, fullUrl, username);
         if (!Objects.isNull(imageInfo)) {
             detailInformation.setImage(imageInfo);
             // 先将该图片信息插入数据库
@@ -86,19 +86,19 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         }
 
         // 拿到User对应的信息
-        UserInformation userInfo = userMapper.selectOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, user.getUsername()));
+        UserInformation userInfo = userMapper.selectOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, username));
         if (Objects.isNull(userInfo)) {
             throw new CustomException("不存在该用户");
         } else {
-            detailInformation.setUser(userInfo);
+            detailInformation.setUsername(userInfo.getUsername());
         }
 
         // 拿到WorkLeader对应的信息
-        UserInformation leaderInfo = userMapper.selectOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, workLeader.getUsername()));
+        UserInformation leaderInfo = userMapper.selectOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, workLeaderName));
         if (Objects.isNull(leaderInfo)) {
             throw new CustomException("不存在该leader");
         } else {
-            detailInformation.setWorkLeader(leaderInfo);
+            detailInformation.setWorkLeaderName(leaderInfo.getUsername());
         }
 
         DeviceInformation deviceInfo = deviceMapper.selectOne(new LambdaQueryWrapper<DeviceInformation>().eq(DeviceInformation::getDeviceId, device.getDeviceId()));
@@ -180,180 +180,29 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
             imageInfo.setCreatorName(username);
 
             return imageInfo;
-        }
-
-//        if (imageObj instanceof MultipartFile) {
-//            MultipartFile imageFile = (MultipartFile) imageObj;
-//            ImageInformation imageInfo = new ImageInformation();
-//            byte[] imageBytes = null;
-//            try {
-//                imageBytes = imageFile.getBytes();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//            String imageOriginalName = imageFile.getOriginalFilename();
-//            Long imageSize = imageFile.getSize();
-//            if (imageSize > 10 * 1024 * 1024) {
-//                throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.IMAGE_SIZE_EXCEED);
-//            }
-//            // 上传图片
-//            try {
-//                imageFile.transferTo(new File(userImageStorageDir + imageStorageName));
-//            } catch (IOException e) {
-//                throw new CustomException("MultipartFile上传异常");
-//            }
-//
-//            imageInfo.setImageId(imageId);
-//            imageInfo.setImageName(imageOriginalName);
-//            imageInfo.setImagePath(userImageStorageDir);
-//            imageInfo.setStorageName(imageStorageName.toString());
-//            imageInfo.setImageSize(imageSize);
-//            imageInfo.setCreateTime(currentTime);
-//            imageInfo.setUpdateTime(currentTime);
-//            imageInfo.setCreatorName(username);
-//
-//            return imageInfo;
-//        }
-
-        return null;
-    }
-
-    @Override
-    public DetailInformation getNewestInfo(DetailInformation detailInformation) {
-        Long deviceId = detailInformation.getDevice().getDeviceId();
-        if (Objects.isNull(deviceId)) {
-            return null;
-        }
-        DetailInformation detailInfo = detailMapper.selectByDeviceId(deviceId);
-        if (Objects.isNull(detailInfo)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, "该设备下无信息");
-        }
-        Long imageId = detailInfo.getImage().getImageId();
-        ImageInformation imageInfo = imageMapper.selectOne(new LambdaQueryWrapper<ImageInformation>().eq(ImageInformation::getImageId, imageId));
-        if (Objects.isNull(imageInfo)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, "无图片信息");
-        }
-        String imagePath = imageInfo.getImagePath();
-        String storageName = imageInfo.getStorageName();
-        if (StringUtils.isBlank(imagePath) || StringUtils.isBlank(storageName)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, "图片路径异常");
-        }
-        String fileFullName = imagePath + "\\" + storageName + CommonConstant.IMAGE_TYPE;
-
-        // 读取图片文件
-        Path imageFilePath = Paths.get(fileFullName);
-        byte[] imageBytes = new byte[0];
-        try {
-            imageBytes = Files.readAllBytes(imageFilePath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        // 将图片字节数组转换为Base64编码
-        String base64String = Base64.encodeBase64String(imageBytes);
-        detailInformation.setImageObj(base64String);
-        detailInformation.setImage(imageInfo);
-        return detailInformation;
-    }
-
-    @Override
-    public List<DetailInformation> getDetailInfoByCondition(DetailInformationVo detailInfo) {
-        List<DetailInformation> allDetailInfo = detailMapper.selectAll();
-        if (Objects.isNull(allDetailInfo)) {
-            return null;
-        }
-        allDetailInfo.stream().forEach(detailInformation -> {
-            UserInformation userInformation = userMapper.selectById(detailInformation.getUser().getUserId());
-            DeviceInformation deviceInformation = deviceMapper.selectById(detailInformation.getDevice().getDeviceId());
-            ImageInformation imageInformation = null;
-            if (detailInformation.getImage().getImageId() != null) {
-                imageInformation = imageMapper.selectById(detailInformation.getImage().getImageId());
-            }
-            detailInformation.setUser(userInformation);
-            detailInformation.setDevice(deviceInformation);
-            detailInformation.setImage(imageInformation);
-        });
-
-//        String username = detailInfo.getUser().getUsername();
-//        Long deviceId = detailInfo.getDevice().getDeviceId();
-//        Integer deviceType = detailInfo.getDevice().getDeviceType();
-//        String powerSupplyStation = detailInfo.getPowerSupplyStation();
-//        Double feeder = detailInfo.getFeeder();
-//        String substationName = detailInfo.getSubstationName();
-//        String inspectionTeam = detailInfo.getInspectionTeam();
-//        Long leaderId = detailInfo.getWorkLeader().getUserId();
-//        String deviceName = detailInfo.getDevice().getDeviceName();
-//        Double maxTemp = detailInfo.getMaxTemp();
-//        Date createTime = detailInfo.getCreateTime();
-
-//
-//        List<DetailInformation> filterList = allDetailInfo.stream()
-//                .filter(detail -> (detailInfo.getUser().getUsername() == null || detail.getUser().getUsername().equals(detailInfo.getUser().getUsername())))
-//                .filter(detail -> (detailInfo.getDeviceId() == null || detail.getDevice().getDeviceId().equals(detailInfo.getDeviceId())))
-//                .filter(detail -> (detailInfo.getDeviceType() == null || detail.getDevice().getDeviceType().equals(detailInfo.getDeviceType())))
-//                .filter(detail -> (detailInfo.getPowerSupplyStation() == null || detail.getPowerSupplyStation().equals(detail.getPowerSupplyStation())))
-//                .filter(detail -> (detailInfo.getFeeder() == null || detail.getFeeder().equals(detail.getFeeder())))
-//                .filter(detail -> (detailInfo.getSubstationName() == null || detail.getSubstationName().equals(detail.getSubstationName())))
-//                .filter(detail -> (detailInfo.getInspectionTeam() == null || detail.getInspectionTeam().equals(detail.getInspectionTeam())))
-//                .filter(detail -> (detailInfo.getWorkLeaderId() == null || detail.getWorkLeader().getUserId().equals(detailInfo.getWorkLeaderId())))
-//                .filter(detail -> (detailInfo.getDeviceName() == null || detail.getDevice().getDeviceName().equals(detailInfo.getDeviceName())))
-//                .filter(detail -> (detailInfo.getMaxTemp() == null || detail.getMaxTemp() > detailInfo.getMaxTemp()))
-//                .filter(detail -> (detailInfo.getCreateTime() == null || detail.getCreateTime().after(detailInfo.getCreateTime())))
-//                .collect(Collectors.toList());
-
-        return null;
-    }
-
-    @Override
-    public DetailInformation convert(DetailInformationVo detailInformationVo) {
-        DetailInformation detailInformation = new DetailInformation();
-        DeviceInformation deviceInformation = new DeviceInformation();
-
-        UserInformation userInformation = new UserInformation();
-        ImageInformation imageInformation = new ImageInformation();
-
-//        deviceInformation.setDeviceId(detailInformationVo.getDeviceId());
-//        deviceInformation.setDeviceName(detailInformationVo.getDeviceName());
-//        deviceInformation.setDeviceType(detailInformationVo.getDeviceType());
-//
-//        userInformation.setUserId(detailInformationVo.getUserId());
-//        userInformation.setUsername(detailInformationVo.getUsername());
-//
-//        imageInformation.setImageId(detailInformationVo.getImageId());
-//        imageInformation.setImageName(detailInformationVo.getImageName());
-//        imageInformation.setImagePath(detailInformationVo.getImagePath());
-//        imageInformation.setImageSize(detailInformationVo.getImageSize());
-//        imageInformation.setCreatorName(detailInformationVo.getCreatorName());
-//        imageInformation.setStorageName(detailInformationVo.getStorageName());
-//
-//
-//        BeanUtils.copyProperties(detailInformationVo, detailInformation);
-//
-//        detailInformation.setUser(userInformation);
-//        detailInformation.setDevice(deviceInformation);
-//        detailInformation.setImage(imageInformation);
-
-        return detailInformation;
-    }
-
-    @Override
-    public List<DetailInformation> getAllRecord() {
-        return detailMapper.selectList(null);
-    }
-
-    @Override
-    public IPage<DetailInformation> selectPage(DetailInformationVo detailInformationVo) {
-        Integer pageSize = detailInformationVo.getPageSize();
-        Page<DetailInformation> page = new Page<>(detailInformationVo.getCurrent(), pageSize);
-        IPage<DetailInformation> iPage = detailMapper.queryPage(page, detailInformationVo);
-        Long count = detailMapper.selectAll().stream().collect(Collectors.counting());
-        long pages = 0;
-        if (count % pageSize == 0) {
-            pages = count / pageSize;
         } else {
-            pages = count / pageSize + 1;
+            return null;
         }
+    }
+
+    @Override
+    public IPage<DetailInformation> pageVo(DetailInformationVo detailInformationVo) {
+        Integer pageSize = detailInformationVo.getPageSize();
+        Integer offset = (detailInformationVo.getCurrent() - 1) * pageSize;
+        System.out.println(offset);
+        Page<DetailInformation> page = new Page<>();
+        page.setCurrent(offset);
+        page.setSize(pageSize);
+        IPage<DetailInformation> iPage = detailMapper.queryPage(page, detailInformationVo);
+        Long total = detailMapper.selectCount(detailInformationVo);
+        Long pages = 0L;
+        if (total % pageSize == 0 | total == 0) {
+            pages = total % pageSize;
+        } else {
+            pages = total / pageSize + 1;
+        }
+        iPage.setTotal(total);
         iPage.setPages(pages);
-        iPage.setTotal(count);
         return iPage;
     }
 

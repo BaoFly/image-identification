@@ -8,14 +8,13 @@
             <id property="deviceId" column="device_id" jdbcType="BIGINT"/>
             <result property="deviceType" column="device_type" jdbcType="INTEGER"/>
             <result property="deviceName" column="device_name" jdbcType="VARCHAR"/>
-            <result property="distributionRoomName" column="distribution_room_name" jdbcType="VARCHAR"/>
 
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        device_id,device_type,device_name,distribution_room_name,
+        device_id,device_type,device_name,
         create_time,update_time
     </sql>
 </mapper>

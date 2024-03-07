@@ -37,34 +37,16 @@ public class DetailController {
         }
         ServletContext servletContext = request.getServletContext();
         String fullUrl = servletContext.getRealPath("/");
-        DetailInformation detailInformation = detailService.convert(detailInformationVo);
-        detailService.uploadInfo(detailInformation, fullUrl);
+        detailService.uploadInfo(detailInformationVo, fullUrl);
         return ResultJson.success();
-    }
-
-    @ApiOperation("根据deviceId获取当前最新的detail信息")
-    @GetMapping("/newestInfo")
-    public ResultJson<DetailInformation> getNewestInfo(@RequestBody DetailInformationVo detailInformationVo) {
-        if (ObjectUtils.allNull(detailInformationVo)) {
-            return ResultJson.fail("值不能全为0");
-        }
-        DetailInformation detailInformation = detailService.convert(detailInformationVo);
-        return ResultJson.success(detailService.getNewestInfo(detailInformation));
     }
 
     @ApiOperation("分页查询")
     @PostMapping("detail/pageVo")
     public ResultJson<?> pageVo(@RequestBody DetailInformationVo detailInformationVo) {
         System.out.println(JSONObject.toJSONString(detailInformationVo));
-        IPage<DetailInformation> page = detailService.selectPage(detailInformationVo);
+        IPage<DetailInformation> page = detailService.pageVo(detailInformationVo);
         return ResultJson.success(page);
-    }
-
-    @ApiOperation("根据条件查询对应数据 条件为空返回所有detailInformation")
-    @GetMapping("/condition")
-    public ResultJson<List<DetailInformation>> getDetailInfoByCondition(@RequestBody DetailInformationVo detailInformationVo) {
-        List<DetailInformation> detailInfoPage = detailService.getDetailInfoByCondition(detailInformationVo);
-        return ResultJson.success(detailInfoPage);
     }
 
 }

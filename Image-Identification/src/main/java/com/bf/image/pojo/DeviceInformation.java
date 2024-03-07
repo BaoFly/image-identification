@@ -39,11 +39,6 @@ public class DeviceInformation implements Serializable {
     private String deviceName;
 
     /**
-     * 配电房名称
-     */
-    private String distributionRoomName;
-
-    /**
      * 创建时间
      */
     private Date createTime;

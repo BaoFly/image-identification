@@ -21,11 +21,7 @@ public interface DetailInformationMapper extends BaseMapper<DetailInformation> {
 
     void insertBySelf(DetailInformation detailInformation);
 
-    DetailInformation selectByDeviceId(Long deviceId);
-
-    List<DetailInformation> selectByCondition(DetailInformation detailInformation);
-
-    List<DetailInformation> selectAll();
+    Long selectCount(@Param("detailInformationVo") DetailInformationVo detailInformationVo);
 
     IPage<DetailInformation> queryPage(@Param("page") Page<DetailInformation> page,
                                       @Param("detailInformationVo") DetailInformationVo detailInformationVo);

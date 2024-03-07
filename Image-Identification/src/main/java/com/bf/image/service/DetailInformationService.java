@@ -17,14 +17,6 @@ import java.util.List;
 public interface DetailInformationService extends IService<DetailInformation> {
 
     void uploadInfo(DetailInformation detailInformation, String fullUrl);
-
-    DetailInformation getNewestInfo(DetailInformation detailInformation);
-
-    List<DetailInformation> getDetailInfoByCondition(DetailInformationVo detailInformationVo);
-
-    DetailInformation convert(DetailInformationVo detailInformationVo);
-
-    List<DetailInformation> getAllRecord();
-
-    IPage<DetailInformation> selectPage(DetailInformationVo detailInformationVo);
+    
+    IPage<DetailInformation> pageVo(DetailInformationVo detailInformationVo);
 }
