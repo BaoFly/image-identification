@@ -98,14 +98,15 @@ public class DetailInformation implements Serializable {
     private Double avgTemp;
 
     /**
+     * 反射温度
+     */
+    private Double reflectedTemp;
+
+    /**
      * 馈线
      */
     private Double feeder;
 
-    /**
-     * 反射温度
-     */
-    private Double emissionTemp;
 
     /**
      * 创建时间

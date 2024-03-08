@@ -19,7 +19,7 @@
             <result property="maxTemp" column="max_temp" jdbcType="DOUBLE"/>
             <result property="minTemp" column="min_temp" jdbcType="DOUBLE"/>
             <result property="avgTemp" column="avg_temp" jdbcType="DOUBLE"/>
-            <result property="emissionTemp" column="emission_temp" jdbcType="DOUBLE"/>
+            <result property="reflectedTemp" column="reflected_temp" jdbcType="DOUBLE"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <association property="device" javaType="com.bf.image.pojo.DeviceInformation">
@@ -33,7 +33,7 @@
             <result property="imageName" column="image_name" jdbcType="VARCHAR"/>
             <result property="imagePath" column="image_path" jdbcType="VARCHAR"/>
             <result property="imageSize" column="image_size" jdbcType="BIGINT"/>
-            <result property="creatorName" column="create_name" jdbcType="VARCHAR"/>
+            <result property="creatorName" column="creator_name" jdbcType="VARCHAR"/>
             <result property="storageName" column="storage_name" jdbcType="VARCHAR"/>
             <!-- 其他 image 字段的映射 -->
         </association>

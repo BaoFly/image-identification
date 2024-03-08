@@ -1,15 +1,12 @@
 package com.bf.image.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -17,9 +14,6 @@ import lombok.NoArgsConstructor;
  */
 @TableName(value ="image_information")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class ImageInformation implements Serializable {
     /**
      * 图片ID
@@ -38,7 +32,7 @@ public class ImageInformation implements Serializable {
     private String imagePath;
 
     /**
-     * 图片原生名字
+     * 图片原本名字
      */
     private String imageName;
 
@@ -46,6 +40,11 @@ public class ImageInformation implements Serializable {
      * 图片存储在服务器的名字
      */
     private String storageName;
+
+    /**
+     * 创建人名称
+     */
+    private String creatorName;
 
     /**
      * 创建时间
@@ -57,13 +56,6 @@ public class ImageInformation implements Serializable {
      */
     private Date updateTime;
 
-    /**
-     * 创建人名称
-     */
-    private String creatorName;
-
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-
-
 }
