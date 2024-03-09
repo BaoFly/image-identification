@@ -2,6 +2,9 @@ package com.bf.image.service;
 
 import com.bf.image.pojo.ImageInformation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bf.image.vo.FileVo;
+
+import java.util.List;
 
 /**
 * @author Administrator
@@ -10,4 +13,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ImageInformationService extends IService<ImageInformation> {
 
+
+    void saveImageByFileVo(List<FileVo> list);
+
+    void removeRecord(FileVo fileVo);
 }

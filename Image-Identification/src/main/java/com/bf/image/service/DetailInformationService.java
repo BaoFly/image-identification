@@ -15,8 +15,8 @@ import java.util.List;
 * @createDate 2023-10-14 18:40:13
 */
 public interface DetailInformationService extends IService<DetailInformation> {
-
-    void uploadInfo(DetailInformation detailInformation, String fullUrl);
     
     IPage<DetailInformation> pageVo(DetailInformationVo detailInformationVo);
+
+    void saveRecord(DetailInformationVo detailInformationVo);
 }

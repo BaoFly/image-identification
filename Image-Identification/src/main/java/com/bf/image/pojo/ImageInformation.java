@@ -6,7 +6,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -14,6 +18,9 @@ import lombok.Data;
  */
 @TableName(value ="image_information")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ImageInformation implements Serializable {
     /**
      * 图片ID
@@ -27,9 +34,9 @@ public class ImageInformation implements Serializable {
     private Long imageSize;
 
     /**
-     * 图片存储路径
+     * 所在桶名称
      */
-    private String imagePath;
+    private String bucketName;
 
     /**
      * 图片原本名字
@@ -40,11 +47,6 @@ public class ImageInformation implements Serializable {
      * 图片存储在服务器的名字
      */
     private String storageName;
-
-    /**
-     * 创建人名称
-     */
-    private String creatorName;
 
     /**
      * 创建时间

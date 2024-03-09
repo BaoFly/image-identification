@@ -17,6 +17,9 @@ import com.bf.image.pojo.ImageInformation;
 import com.bf.image.pojo.UserInformation;
 import com.bf.image.service.DetailInformationService;
 import com.bf.image.mapper.DetailInformationMapper;
+import com.bf.image.service.DeviceInformationService;
+import com.bf.image.service.ImageInformationService;
+import com.bf.image.service.UserInformationService;
 import com.bf.image.utils.TimeUtil;
 import com.bf.image.utils.UUIDUtil;
 import com.bf.image.vo.DetailInformationVo;
@@ -50,140 +53,16 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     implements DetailInformationService {
 
     @Autowired
-    private UserInformationMapper userMapper;
+    private UserInformationService userService;
 
     @Autowired
-    private DeviceInformationMapper deviceMapper;
+    private DeviceInformationService deviceService;
 
     @Autowired
-    private ImageInformationMapper imageMapper;
+    private ImageInformationService imageService;
 
     @Autowired
     private DetailInformationMapper detailMapper;
-
-    @Override
-    @Transactional
-    public void uploadInfo(DetailInformation detailInformation, String fullUrl) {
-        // 拿到对应的封装的实体类
-        Object imageObj = detailInformation.getImageObj();
-        String username = detailInformation.getUsername();
-        String workLeaderName = detailInformation.getWorkLeaderName();
-        DeviceInformation device = detailInformation.getDevice();
-
-        Long detailId = UUIDUtil.generateUUID();
-        detailInformation.setDetailId(detailId);
-
-        Date currentTime = TimeUtil.getCurrentTime();
-        detailInformation.setCreateTime(currentTime);
-        detailInformation.setCreateTime(currentTime);
-
-        // 调用封装好的方法，直接返回对应image对象
-        ImageInformation imageInfo = loadLocal(imageObj, fullUrl, username);
-        if (!Objects.isNull(imageInfo)) {
-            detailInformation.setImage(imageInfo);
-            // 先将该图片信息插入数据库
-            imageMapper.insert(imageInfo);
-        }
-
-        // 拿到User对应的信息
-        UserInformation userInfo = userMapper.selectOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, username));
-        if (Objects.isNull(userInfo)) {
-            throw new CustomException("不存在该用户");
-        } else {
-            detailInformation.setUsername(userInfo.getUsername());
-        }
-
-        // 拿到WorkLeader对应的信息
-        UserInformation leaderInfo = userMapper.selectOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, workLeaderName));
-        if (Objects.isNull(leaderInfo)) {
-            throw new CustomException("不存在该leader");
-        } else {
-            detailInformation.setWorkLeaderName(leaderInfo.getUsername());
-        }
-
-        DeviceInformation deviceInfo = deviceMapper.selectOne(new LambdaQueryWrapper<DeviceInformation>().eq(DeviceInformation::getDeviceId, device.getDeviceId()));
-        if (Objects.isNull(deviceInfo)) {
-            throw new CustomException("不存在该设备ID");
-        } else {
-            detailInformation.setDevice(deviceInfo);
-        }
-
-        detailMapper.insertBySelf(detailInformation);
-
-    }
-
-    private ImageInformation loadLocal(Object imageObj, String fullUrl, String username) {
-        if (Objects.isNull(imageObj)) {
-            return null;
-        }
-        // 创建存储图片的目录（如果不存在）
-        String userImageStorageDir = fullUrl + CommonConstant.IMAGE_DIR + "\\" + username;
-        File imageDir = new File(userImageStorageDir);
-        if (!imageDir.exists()) {
-            imageDir.mkdirs();
-        }
-
-        Long imageId = UUIDUtil.generateUUID();
-        Date currentTime = TimeUtil.getCurrentTime();
-        // 直接用日期作为图片的名字
-        Long imageStorageName = TimeUtil.getCurrentTime().getTime();
-
-        if (imageObj instanceof String) {
-            ImageInformation imageInfo = new ImageInformation();
-            // 转成字符串类型
-            String imageStr = (String) imageObj;
-            if (!Base64.isBase64(imageStr)) {
-                throw new CustomException("无效的Base64编码");
-            }
-            // 解析 Base64 字符串为字节数组
-            byte[] imageBytes = Base64.decodeBase64(imageStr.replace("data:image/jpeg;base64,", ""));
-            for (int i = 0; i < imageBytes.length; ++i) {
-                if (imageBytes[i] < 0) {
-                    imageBytes[i] += 256;
-                }
-            }
-            // 拿到对应的图片字节长度
-            long imageSize = imageBytes.length;
-            // 校验图片大小是否小于10M
-            if (imageSize > 10 * 1024 * 1024) {
-                throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.IMAGE_SIZE_EXCEED);
-            }
-
-            // 开始上传图片至服务器的ContextPath + all-images + username 路径下
-            FileOutputStream fos = null;
-
-            Path filePath = Paths.get(userImageStorageDir, String.valueOf(imageStorageName));
-            Path resolvedPath = filePath.resolveSibling(imageStorageName + CommonConstant.IMAGE_TYPE);
-            try {
-                fos = new FileOutputStream(resolvedPath.toFile());
-                fos.write(imageBytes);
-                fos.flush();
-            } catch (IOException e) {
-                throw new CustomException("上传图片IO异常");
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
-                        throw new CustomException("IO关闭时异常");
-                    }
-                }
-            }
-
-            imageInfo.setImageId(imageId);
-            imageInfo.setImageSize(imageSize);
-            imageInfo.setImageName("");
-            imageInfo.setImagePath(userImageStorageDir);
-            imageInfo.setStorageName(imageStorageName.toString());
-            imageInfo.setCreateTime(currentTime);
-            imageInfo.setUpdateTime(currentTime);
-            imageInfo.setCreatorName(username);
-
-            return imageInfo;
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public IPage<DetailInformation> pageVo(DetailInformationVo detailInformationVo) {
@@ -204,6 +83,28 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         iPage.setTotal(total);
         iPage.setPages(pages);
         return iPage;
+    }
+
+    @Override
+    @Transactional
+    public void saveRecord(DetailInformationVo detailInformationVo) {
+        String username = detailInformationVo.getUsername();
+        String workLeaderName = detailInformationVo.getWorkLeaderName();
+        UserInformation user = userService.getOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, username));
+        UserInformation workLeader = userService.getOne(new LambdaQueryWrapper<UserInformation>().eq(UserInformation::getUsername, workLeaderName));
+        if (Objects.isNull(user) || Objects.isNull(workLeader)) {
+            throw new CustomException(CommonConstant.NO_EXIST_USER);
+        }
+
+        DeviceInformation device = detailInformationVo.getDevice();
+        Long deviceId = UUIDUtil.generateUUID();
+        device.setDeviceId(deviceId);
+        deviceService.save(device);
+
+        Long detailId = UUIDUtil.generateUUID();
+        detailInformationVo.setDetailId(detailId);
+        detailInformationVo.setDevice(device);
+        detailMapper.saveRecord(detailInformationVo);
     }
 
 }

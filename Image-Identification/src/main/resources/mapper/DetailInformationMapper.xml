@@ -31,9 +31,8 @@
         <association property="image" javaType="com.bf.image.pojo.ImageInformation">
             <id property="imageId" column="image_id" jdbcType="BIGINT"/>
             <result property="imageName" column="image_name" jdbcType="VARCHAR"/>
-            <result property="imagePath" column="image_path" jdbcType="VARCHAR"/>
+            <result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
             <result property="imageSize" column="image_size" jdbcType="BIGINT"/>
-            <result property="creatorName" column="creator_name" jdbcType="VARCHAR"/>
             <result property="storageName" column="storage_name" jdbcType="VARCHAR"/>
             <!-- 其他 image 字段的映射 -->
         </association>
@@ -56,15 +55,58 @@
             (#{detailId}, #{powerSupplyStation}, #{substationName}, #{inspectionTeam}, #{ambientTemp}, #{relativeHumidity}, #{centralHumidity}, #{maxTemp}, #{minTemp}, #{avgTemp}, #{emissionTemp}, #{createTime}, #{updateTime}, #{user.userId}, #{workLeader.userId}, #{device.deviceId}, #{image.imageId})
     </insert>
 
+    <insert id="saveRecord" parameterType="com.bf.image.vo.DetailInformationVo">
+        INSERT INTO `image_identification`.`detail_information` (
+            `detail_id`,
+            `device_id`,
+            `image_id`,
+            `username`,
+            `work_leader_name`,
+            `power_supply_station`,
+            `substation_name`,
+            `inspection_team`,
+            `distribution_room_name`,
+            `ambient_temp`,
+            `relative_humidity`,
+            `central_humidity`,
+            `feeder`,
+            `max_temp`,
+            `min_temp`,
+            `avg_temp`,
+            `reflected_temp`,
+            `create_time`
+        )
+        VALUES
+            (
+                #{detailId},
+                #{device.deviceId},
+                #{imageId},
+                #{username},
+                #{workLeaderName},
+                #{powerSupplyStation},
+                #{substationName},
+                #{distributionRoomName},
+                #{inspectionTeam},
+                #{ambientTemp},
+                #{relativeHumidity},
+                #{centralHumidity},
+                #{maxTemp},
+                #{minTemp},
+                #{avgTemp},
+                #{reflectedTemp},
+                #{feeder},
+                #{createTime}
+            );
+    </insert>
+
     <select id="queryPage" resultMap="BaseResultMap">
         SELECT
             dt.*,
                 dv.device_name,
             dv.device_type,
             ii.image_name,
-            ii.image_path,
+            ii.bucket_name,
             ii.image_size,
-            ii.creator_name,
             ii.storage_name
         FROM
             `detail_information` dt
@@ -108,6 +150,7 @@
                 AND dt.create_time BETWEEN #{detailInformationVo.dateRange[0]} AND #{detailInformationVo.dateRange[1]}
             </if>
         </where>
+        ORDER BY create_time desc
         LIMIT #{page.current},#{page.size}
     </select>
 

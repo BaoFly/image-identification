@@ -27,7 +27,7 @@ public class GlobalExceptionHandle {
      * @param request
      * @param e
      */
-    @ExceptionHandler(value = Exception.class)
+//    @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResultJson defaultErrorHandler(HttpServletRequest request, Exception e){
         return ResultJson.fail(e.getMessage());

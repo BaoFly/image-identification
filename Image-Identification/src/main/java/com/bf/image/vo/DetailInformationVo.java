@@ -25,4 +25,6 @@ public class DetailInformationVo extends DetailInformation{
 
     private List<Date> dateRange;
 
+    private Long imageId;
+
 }
