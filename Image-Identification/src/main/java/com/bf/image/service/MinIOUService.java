@@ -3,6 +3,7 @@ package com.bf.image.service;
 import com.bf.image.pojo.FileUploadBody;
 import com.bf.image.vo.FileVo;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 

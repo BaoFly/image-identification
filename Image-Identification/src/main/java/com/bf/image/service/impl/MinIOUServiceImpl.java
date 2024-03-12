@@ -10,6 +10,7 @@ import com.bf.image.service.MinIOUService;
 import com.bf.image.utils.UUIDUtil;
 import com.bf.image.vo.FileVo;
 import io.minio.*;
+import io.minio.errors.*;
 import io.minio.http.Method;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -20,13 +21,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 public class MinIOUServiceImpl implements MinIOUService {
@@ -38,6 +43,7 @@ public class MinIOUServiceImpl implements MinIOUService {
 
     @Autowired
     private MinIOConfig minIOConfig;
+
 
     /**
      * 删除文件
@@ -116,7 +122,7 @@ public class MinIOUServiceImpl implements MinIOUService {
                     fileVo.setSize(size);
                     fileVo.setModule(bucketName);
                     fileVo.setOriginalName(file.getOriginalFilename());
-                    fileVo.setImageId(UUIDUtil.generateUUID());
+                    fileVo.setImageId(String.valueOf(UUIDUtil.generateUUID()));
                     fileVo.setPreviewUrl(getPreviewUrl(fileName, bucketName));
                     resultList.add(fileVo);
                 }catch (Exception e){
@@ -154,6 +160,7 @@ public class MinIOUServiceImpl implements MinIOUService {
             try {
                 ObjectStat objectStat = minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(fileName).build());
                 response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+                response.setHeader("Access-Control-Allow-Origin", "*");
                 response.setContentType(objectStat.contentType());
                 response.setCharacterEncoding("UTF-8");
                 InputStream inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());

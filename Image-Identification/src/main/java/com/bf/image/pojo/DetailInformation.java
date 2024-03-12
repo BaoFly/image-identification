@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +28,7 @@ public class DetailInformation implements Serializable {
      * 表主键ID
      */
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long detailId;
 
     /**
@@ -121,11 +124,8 @@ public class DetailInformation implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
-    /**
-     * 前端传过来的字段，支持MultipartFile类型 和 base64的图片
-     */
     @TableField(exist = false)
-    private Object imageObj;
+    private String previewUrl;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

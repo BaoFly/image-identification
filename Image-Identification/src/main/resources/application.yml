@@ -7,11 +7,10 @@ server:
 # 数据库连接信息
 spring:
   datasource:
-
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: 1234
+    password: baofly913.
 
   # 配置热部署
   devtools:
@@ -35,7 +34,7 @@ mybatis-plus:
 
 minio:
   #自己本地服务器 minio地址以及 账号密码，和桶名。
-  url: http://192.168.124.24:9000
+  url: http://127.0.0.1:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: my-image-bucket

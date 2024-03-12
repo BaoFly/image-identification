@@ -31,7 +31,7 @@ public class FileVo implements Serializable {
     /**
      * 图片ID
      */
-    private Long imageId;
+    private String imageId;
 
     /**
      * 图片大小

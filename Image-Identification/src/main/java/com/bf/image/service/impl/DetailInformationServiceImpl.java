@@ -15,17 +15,14 @@ import com.bf.image.pojo.DetailInformation;
 import com.bf.image.pojo.DeviceInformation;
 import com.bf.image.pojo.ImageInformation;
 import com.bf.image.pojo.UserInformation;
-import com.bf.image.service.DetailInformationService;
+import com.bf.image.service.*;
 import com.bf.image.mapper.DetailInformationMapper;
-import com.bf.image.service.DeviceInformationService;
-import com.bf.image.service.ImageInformationService;
-import com.bf.image.service.UserInformationService;
 import com.bf.image.utils.TimeUtil;
 import com.bf.image.utils.UUIDUtil;
 import com.bf.image.vo.DetailInformationVo;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +61,9 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     @Autowired
     private DetailInformationMapper detailMapper;
 
+    @Autowired
+    private MinIOUService minIOUService;
+
     @Override
     public IPage<DetailInformation> pageVo(DetailInformationVo detailInformationVo) {
         Integer pageSize = detailInformationVo.getPageSize();
@@ -82,6 +82,16 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         }
         iPage.setTotal(total);
         iPage.setPages(pages);
+
+        List<DetailInformation> records = iPage.getRecords();
+        for (DetailInformation record : records) {
+            ImageInformation image = record.getImage();
+            String bucketName = image.getBucketName();
+            String storageName = image.getStorageName();
+            String previewUrl = minIOUService.getPreviewUrl(storageName, bucketName);
+            record.setPreviewUrl(previewUrl);
+        }
+
         return iPage;
     }
 

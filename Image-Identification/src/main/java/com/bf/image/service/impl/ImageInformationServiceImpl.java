@@ -35,7 +35,7 @@ public class ImageInformationServiceImpl extends ServiceImpl<ImageInformationMap
         List<ImageInformation> imageInformationList = new ArrayList<>();
         for (FileVo fileVo : list) {
             ImageInformation imageInformation = ImageInformation.builder()
-                    .imageId(fileVo.getImageId())
+                    .imageId(Long.valueOf(fileVo.getImageId()))
                     .bucketName(bucketName)
                     .imageSize(fileVo.getSize())
                     .storageName(fileVo.getFileName())

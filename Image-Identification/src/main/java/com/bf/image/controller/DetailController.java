@@ -1,12 +1,15 @@
 package com.bf.image.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bf.image.config.MinIOConfig;
 import com.bf.image.constant.CommonConstant;
 import com.bf.image.exception.CustomException;
 import com.bf.image.pojo.DetailInformation;
 import com.bf.image.pojo.FileUploadBody;
+import com.bf.image.pojo.ImageInformation;
 import com.bf.image.service.DetailInformationService;
 import com.bf.image.service.ImageInformationService;
 import com.bf.image.service.MinIOUService;
@@ -23,9 +26,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Api(tags = "detailInformation相关接口")
 @RestController
@@ -39,7 +45,41 @@ public class DetailController {
     private MinIOUService minIOUService;
 
     @Autowired
+    private MinIOConfig minIOConfig;
+
+    @Autowired
     private ImageInformationService imageService;
+
+    @ApiOperation("下载图片")
+    @PostMapping("detail/download")
+    public void downloadImage(@RequestParam("fileNameList") ArrayList<String> fileNameList,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
+//       minIOUService.batchDownload(
+//                fileNameList,
+//                String.valueOf(System.currentTimeMillis()),
+//                response,
+//                request
+//        );
+        minIOUService.downloadFile(
+                response,
+                fileNameList.get(0),
+                minIOConfig.getBucketName()
+        );
+    }
+
+    @ApiOperation("下载图片")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping("detail/downloadFile")
+    public void downloadImage(String fileName,
+                              HttpServletRequest request,
+                              HttpServletResponse response) {
+        minIOUService.downloadFile(
+                response,
+                fileName,
+                minIOConfig.getBucketName()
+        );
+    }
 
     @ApiOperation("上传图片")
     @PostMapping("detail/upload")
