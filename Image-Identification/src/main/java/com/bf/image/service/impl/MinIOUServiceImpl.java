@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -139,18 +141,33 @@ public class MinIOUServiceImpl implements MinIOUService {
     public String getPreviewUrl(String fileName, String bucketName) {
         if (StringUtils.isNotBlank(fileName)) {
             bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();
+            String previewURL = "";
             try {
                 minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(fileName).build());
                 if (null != minIOConfig.getPreviewExpiry()){
-                    return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(fileName).expiry(minIOConfig.getPreviewExpiry(), TimeUnit.HOURS).build());
+                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(fileName).expiry(minIOConfig.getPreviewExpiry(), TimeUnit.HOURS).build());
                 }else {
-                    return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(fileName).build());
+                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(fileName).build());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("在文件存储中无FileName：【{}】", fileName);
+                previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(minIOConfig.getDefaultPictureName()).build());
+            } finally {
+                try {
+                    // Replace localhost with the public IP address
+                    URI uri = new URI(previewURL);
+                    String publicIpAddress = minIOConfig.getPublicAddr(); // Replace with your public IP address
+                    URI modifiedUri = new URI(uri.getScheme(), uri.getUserInfo(), publicIpAddress, uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
+                    String modifiedPreviewURL = modifiedUri.toString();
+                    log.info("FileName：【{}】，BucketName：【{}】，modifiedPreviewURL：【{}】", fileName, bucketName, modifiedPreviewURL);
+                    return modifiedPreviewURL;
+                } catch (URISyntaxException e) {
+                    throw new RuntimeException(e);
+                }
             }
+        } else {
+            return null;
         }
-        return null;
     }
 
     @Override

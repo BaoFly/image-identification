@@ -13,6 +13,7 @@ import com.bf.image.pojo.ImageInformation;
 import com.bf.image.service.DetailInformationService;
 import com.bf.image.service.ImageInformationService;
 import com.bf.image.service.MinIOUService;
+import com.bf.image.vo.ChartsVo;
 import com.bf.image.vo.DetailInformationVo;
 import com.bf.image.vo.FileVo;
 import com.bf.image.vo.ResultJson;
@@ -102,6 +103,14 @@ public class DetailController {
         System.out.println(JSONObject.toJSONString(detailInformationVo));
         IPage<DetailInformation> page = detailService.pageVo(detailInformationVo);
         return ResultJson.success(page);
+    }
+
+    @ApiOperation("表格信息")
+    @PostMapping("detail/charts")
+    public ResultJson<?> chartsInfo(@RequestBody DetailInformationVo detailInformationVo) {
+        List<DetailInformation> records = detailService.pageVo(detailInformationVo).getRecords();
+        ChartsVo chartsVo = detailService.chartsInfo(records);
+        return ResultJson.success(chartsVo);
     }
 
 }

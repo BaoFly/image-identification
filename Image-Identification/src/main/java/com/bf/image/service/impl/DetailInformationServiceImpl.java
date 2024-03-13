@@ -19,9 +19,13 @@ import com.bf.image.service.*;
 import com.bf.image.mapper.DetailInformationMapper;
 import com.bf.image.utils.TimeUtil;
 import com.bf.image.utils.UUIDUtil;
+import com.bf.image.vo.ChartsVo;
 import com.bf.image.vo.DetailInformationVo;
+import com.bf.image.vo.SeriesData;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +39,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -115,6 +118,115 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         detailInformationVo.setDetailId(detailId);
         detailInformationVo.setDevice(device);
         detailMapper.saveRecord(detailInformationVo);
+    }
+
+    @Override
+    public ChartsVo chartsInfo(List<DetailInformation> records) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ChartsVo chartsVo = new ChartsVo();
+        List<SeriesData> seriesDataList = new ArrayList<>();
+
+        List<String> xList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> sdf.format(record.getCreateTime()))
+                .collect(Collectors.toList());
+
+        List<Double> ambientTempList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getAmbientTemp())
+                .collect(Collectors.toList());
+
+        List<Double> relativeHumidityList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getRelativeHumidity())
+                .collect(Collectors.toList());
+
+        List<Double> centralHumidityList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getCentralHumidity())
+                .collect(Collectors.toList());
+
+        List<Double> maxTempList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getMaxTemp())
+                .collect(Collectors.toList());
+
+        List<Double> minTempList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getMinTemp())
+                .collect(Collectors.toList());
+
+        List<Double> avgTempList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getAvgTemp())
+                .collect(Collectors.toList());
+
+        List<Double> reflectTempList = records.stream()
+                .sorted(Comparator.comparing(DetailInformation::getCreateTime))
+                .map(record -> record.getReflectedTemp())
+                .collect(Collectors.toList());
+
+
+        SeriesData ambient = SeriesData.builder()
+                .name("Ambient Temp")
+                .data(ambientTempList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(0, ambient);
+
+        SeriesData humidity = SeriesData.builder()
+                .name("Relative Humidity")
+                .data(relativeHumidityList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(1, humidity);
+
+        SeriesData cHumidity = SeriesData.builder()
+                .name("Central Humidity")
+                .data(centralHumidityList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(2, cHumidity);
+
+        SeriesData maxTemp = SeriesData.builder()
+                .name("Max Temp")
+                .data(maxTempList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(3, maxTemp);
+
+        SeriesData minTemp = SeriesData.builder()
+                .name("Min Temp")
+                .data(minTempList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(4, minTemp);
+
+        SeriesData avgTemp = SeriesData.builder()
+                .name("Avg Temp")
+                .data(avgTempList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(5, avgTemp);
+
+        SeriesData reflectedTemp = SeriesData.builder()
+                .name("Reflected Temp")
+                .data(reflectTempList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(6, reflectedTemp);
+
+        chartsVo.setCategories(xList);
+        chartsVo.setSeriesDataList(seriesDataList);
+
+        return chartsVo;
     }
 
 }

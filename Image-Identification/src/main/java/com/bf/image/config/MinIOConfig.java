@@ -35,6 +35,16 @@ public class MinIOConfig {
      */
     private Integer previewExpiry;
 
+    /**
+     * 公网IP
+     */
+    private String publicAddr;
+
+    /**
+     * 默认图片名称
+     */
+    private String defaultPictureName;
+
 
     @Bean
     public MinioClient getMinIOClient()
