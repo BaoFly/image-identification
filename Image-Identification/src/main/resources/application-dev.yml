@@ -4,13 +4,17 @@ server:
     context-path: /identification
   port: 6677
 
+token:
+  refreshTime: 604800
+  secretKey: baofly913.
+
 # 数据库连接信息
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
-    password: baofly913.
+    password: 1234
 
   # 配置热部署
   devtools:

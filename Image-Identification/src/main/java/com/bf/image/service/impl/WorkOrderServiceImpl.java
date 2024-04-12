@@ -1,9 +1,12 @@
 package com.bf.image.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bf.image.pojo.DetailInformation;
 import com.bf.image.pojo.WorkOrder;
 import com.bf.image.service.WorkOrderService;
 import com.bf.image.mapper.WorkOrderMapper;
+import com.bf.image.vo.TevVo;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +18,10 @@ import org.springframework.stereotype.Service;
 public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder>
     implements WorkOrderService{
 
+    @Override
+    public IPage<DetailInformation> pageVo(TevVo tevVo) {
+        return null;
+    }
 }
 
 

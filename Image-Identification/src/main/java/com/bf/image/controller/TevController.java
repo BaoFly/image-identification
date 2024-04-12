@@ -36,14 +36,14 @@ public class TevController {
     @ApiOperation("tev分页查询")
     @PostMapping("tev/pageVo")
     public ResultJson<?> pageVo(@RequestBody TevVo tevVo) {
-        IPage<DetailInformation> page = tevService.pageVo(tevVo);
+        IPage<TevVo> page = tevService.pageVo(tevVo);
         return ResultJson.success(page);
     }
 
     @ApiOperation("tev表格信息")
     @PostMapping("tev/charts")
     public ResultJson<?> chartsInfo(@RequestBody TevVo tevVo) {
-        List<DetailInformation> records = tevService.pageVo(tevVo).getRecords();
+        List<TevVo> records = tevService.pageVo(tevVo).getRecords();
         ChartsVo chartsVo = tevService.chartsInfo(records);
         return ResultJson.success(chartsVo);
     }

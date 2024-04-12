@@ -6,6 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -19,6 +23,7 @@ public class TevInformation implements Serializable {
      * 表主键ID
      */
     @TableId(value = "tev_id", type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tevId;
 
     /**
@@ -43,6 +48,7 @@ public class TevInformation implements Serializable {
      * 局部TEV发生时间
      */
     @TableField(value = "occurrence_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date occurrenceTime;
 
     /**
@@ -61,12 +67,14 @@ public class TevInformation implements Serializable {
      * 创建时间
      */
     @TableField(value = "create_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField(value = "update_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
@@ -79,24 +87,28 @@ public class TevInformation implements Serializable {
      * 图片ID
      */
     @TableField(value = "image_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long imageId;
 
     /**
      * 设备ID
      */
     @TableField(value = "device_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long deviceId;
 
     /**
      * 用户ID
      */
     @TableField(value = "user_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     /**
      * 领导ID
      */
     @TableField(value = "leader_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long leaderId;
 
     @TableField(exist = false)

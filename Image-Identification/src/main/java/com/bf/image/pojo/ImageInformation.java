@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -51,11 +52,13 @@ public class ImageInformation implements Serializable {
      */
     private String storageName;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     /**
      * 创建时间
      */
     private Date createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     /**
      * 更新时间
      */

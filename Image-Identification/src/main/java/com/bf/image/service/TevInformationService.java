@@ -16,9 +16,9 @@ import java.util.List;
 */
 public interface TevInformationService extends IService<TevInformation> {
 
-    IPage<DetailInformation> pageVo(TevVo tevVo);
+    IPage<TevVo> pageVo(TevVo tevVo);
 
-    ChartsVo chartsInfo(List<DetailInformation> records);
+    ChartsVo chartsInfo(List<TevVo> records);
 
     void saveRecord(TevVo tevVo);
 }

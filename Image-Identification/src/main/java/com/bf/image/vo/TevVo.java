@@ -9,6 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @Builder
@@ -22,5 +25,15 @@ public class TevVo extends TevInformation {
     public ImageInformation image;
 
     public DeviceInformation device;
+
+    public List<Date> occurrenceTimeRange;
+
+    public List<Date> dateRange;
+
+    public Integer current;
+
+    public Integer pageSize;
+
+    private String previewUrl;
 
 }

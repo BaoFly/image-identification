@@ -6,6 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -19,24 +23,28 @@ public class WorkOrder implements Serializable {
      * 主键ID
      */
     @TableId(value = "work_order_id", type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long workOrderId;
 
     /**
      * 创建人ID
      */
     @TableField(value = "creator_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long creatorId;
 
     /**
      * 审核人ID
      */
     @TableField(value = "reviewer_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long reviewerId;
 
     /**
      * 信息详情ID
      */
     @TableField(value = "detail_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long detailId;
 
     /**
@@ -49,36 +57,42 @@ public class WorkOrder implements Serializable {
      * 记录创建时间
      */
     @TableField(value = "create_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 记录更新时间
      */
     @TableField(value = "update_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
      * 新建时间
      */
     @TableField(value = "new_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date newTime;
 
     /**
      * 审核时间
      */
     @TableField(value = "review_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date reviewTime;
 
     /**
      * 已完成时间
      */
     @TableField(value = "complete_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date completeTime;
 
     /**
      * 失败时间
      */
     @TableField(value = "fail_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date failTime;
 
     /**
