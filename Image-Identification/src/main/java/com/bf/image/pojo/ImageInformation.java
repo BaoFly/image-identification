@@ -27,7 +27,7 @@ public class ImageInformation implements Serializable {
     /**
      * 图片ID
      */
-    @TableId
+    @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long imageId;
 

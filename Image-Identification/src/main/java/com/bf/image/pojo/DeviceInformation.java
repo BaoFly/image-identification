@@ -27,7 +27,7 @@ public class DeviceInformation implements Serializable {
     /**
      * 设备表ID
      */
-    @TableId
+    @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long deviceId;
 

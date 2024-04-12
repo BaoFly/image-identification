@@ -25,7 +25,7 @@ public class UserInformation implements Serializable {
     /**
      * 用户表ID
      */
-    @TableId
+    @TableId(type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
