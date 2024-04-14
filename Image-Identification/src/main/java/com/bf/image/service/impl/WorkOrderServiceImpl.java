@@ -150,22 +150,27 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
 
     @Override
     public void create(WorkOrderVo workOrderVo) {
-        String username = workOrderVo.getUsername();
-        String reviewName = workOrderVo.getReviewName();
+        WorkOrder workOrder = null;
+        if (workOrderVo.getType() == 1) {
+            String username = workOrderVo.getUsername();
+            String reviewName = workOrderVo.getReviewName();
 
-        UserInformation user = userService.getOne(Wrappers.lambdaQuery(UserInformation.class)
-                .eq(UserInformation::getUsername, username));
-        UserInformation reviewer = userService.getOne(Wrappers.lambdaQuery(UserInformation.class)
-                .eq(UserInformation::getUsername, reviewName));
+            UserInformation user = userService.getOne(Wrappers.lambdaQuery(UserInformation.class)
+                    .eq(UserInformation::getUsername, username));
+            UserInformation reviewer = userService.getOne(Wrappers.lambdaQuery(UserInformation.class)
+                    .eq(UserInformation::getUsername, reviewName));
 
-        workOrderVo.setUsername(null);
-        workOrderVo.setReviewName(null);
+            workOrderVo.setUsername(null);
+            workOrderVo.setReviewName(null);
 
-        WorkOrder workOrder = jsonParser.convertValue(workOrderVo, WorkOrder.class);
-        workOrder.setCreatorId(user.getUserId());
-        workOrder.setReviewerId(reviewer.getUserId());
+            workOrder = jsonParser.convertValue(workOrderVo, WorkOrder.class);
+
+            workOrder.setCreatorId(user.getUserId());
+            workOrder.setReviewerId(reviewer.getUserId());
+        } else {
+            workOrder = jsonParser.convertValue(workOrderVo, WorkOrder.class);
+        }
         workOrder.setStatus(2);
-
         this.save(workOrder);
     }
 
