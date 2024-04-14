@@ -229,6 +229,11 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         return chartsVo;
     }
 
+    @Override
+    public DetailInformation getDetailById(Long detailId) {
+        return detailMapper.getDetailById(detailId);
+    }
+
 }
 
 

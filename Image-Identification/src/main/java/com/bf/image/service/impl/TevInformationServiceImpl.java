@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.config.MinIOConfig;
+import com.bf.image.exception.CustomException;
 import com.bf.image.pojo.*;
 import com.bf.image.service.*;
 import com.bf.image.mapper.TevInformationMapper;
 import com.bf.image.vo.ChartsVo;
+import com.bf.image.vo.SeriesData;
 import com.bf.image.vo.TevVo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -66,7 +68,8 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
                 .like(StringUtils.isNotBlank(tevVo.getUser().getUsername()), UserInformation::getUsername, tevVo.getUser().getUsername())
                 .like(StringUtils.isNotBlank(tevVo.getWorkLeader().getUsername()), UserInformation::getUsername, tevVo.getWorkLeader().getUsername()));
         List<Long> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
-        Map<Long, String> userIdNameMap = userList.stream().collect(Collectors.toMap(
+        List<UserInformation> allUserList = userService.list();
+        Map<Long, String> userIdNameMap = allUserList.stream().collect(Collectors.toMap(
                 user -> user.getUserId(),
                 user -> user.getUsername()
         ));
@@ -77,7 +80,8 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
                 .eq(Objects.nonNull(tevVo.getDevice().getDeviceType()), DeviceInformation::getDeviceType, tevVo.getDevice().getDeviceType())
         );
         List<Long> deviceIdList = deviceList.stream().map(device -> device.getDeviceId()).collect(Collectors.toList());
-        Map<Long, DeviceInformation> deviceIdMap = deviceList.stream().collect(Collectors.toMap(
+        List<DeviceInformation> allDeviceList = deviceService.list();
+        Map<Long, DeviceInformation> deviceIdMap = allDeviceList.stream().collect(Collectors.toMap(
                 device -> device.getDeviceId(),
                 device -> device
         ));
@@ -148,11 +152,115 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
 
     @Override
     public ChartsVo chartsInfo(List<TevVo> records) {
-        return null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        ChartsVo chartsVo = new ChartsVo();
+        List<SeriesData> seriesDataList = new ArrayList<>();
+
+        List<String> xList = records.stream()
+                .sorted(Comparator.comparing(TevInformation::getOccurrenceTime))
+                .map(record -> sdf.format(record.getCreateTime()))
+                .collect(Collectors.toList());
+
+        List<Double> quasiPeakValueList = records.stream()
+                .sorted(Comparator.comparing(TevInformation::getOccurrenceTime))
+                .map(record -> record.getQuasiPeakValue())
+                .collect(Collectors.toList());
+
+        List<Double> maxValueList = records.stream()
+                .sorted(Comparator.comparing(TevInformation::getOccurrenceTime))
+                .map(record -> record.getMaxValue())
+                .collect(Collectors.toList());
+
+        List<Double> minValueList = records.stream()
+                .sorted(Comparator.comparing(TevInformation::getOccurrenceTime))
+                .map(record -> record.getMinValue())
+                .collect(Collectors.toList());
+
+        List<Double> repetitionRateList = records.stream()
+                .sorted(Comparator.comparing(TevInformation::getOccurrenceTime))
+                .map(record -> record.getRepetitionRate().doubleValue())
+                .collect(Collectors.toList());
+
+        List<Double> polarityList = records.stream()
+                .sorted(Comparator.comparing(TevInformation::getOccurrenceTime))
+                .map(record -> record.getPolarity().doubleValue())
+                .collect(Collectors.toList());
+
+
+        SeriesData quasiPeakValueData = SeriesData.builder()
+                .name("Quasi Peak Value")
+                .data(quasiPeakValueList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(0, quasiPeakValueData);
+
+        SeriesData maxValueData = SeriesData.builder()
+                .name("Max Value")
+                .data(maxValueList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(1, maxValueData);
+
+        SeriesData minValueData = SeriesData.builder()
+                .name("Min Value")
+                .data(minValueList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(2, minValueData);
+
+        SeriesData repetitionRateData = SeriesData.builder()
+                .name("Repetition Rate")
+                .data(repetitionRateList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(3, repetitionRateData);
+
+        SeriesData polarityData = SeriesData.builder()
+                .name("Polarity")
+                .data(polarityList)
+                .type("line")
+                .stack("Total")
+                .build();
+        seriesDataList.add(4, polarityData);
+
+        chartsVo.setCategories(xList);
+        chartsVo.setSeriesDataList(seriesDataList);
+
+        return chartsVo;
     }
 
     @Override
     public void saveRecord(TevVo tevVo) {
+        String username = tevVo.getUser().getUsername();
+        String leaderName = tevVo.getWorkLeader().getUsername();
+        DeviceInformation device = tevVo.getDevice();
+
+        UserInformation user = userService.getOne(Wrappers.lambdaQuery(UserInformation.class)
+                .eq(UserInformation::getUsername, username));
+        UserInformation leader = userService.getOne(Wrappers.lambdaQuery(UserInformation.class)
+                .eq(UserInformation::getUsername, leaderName));
+
+        if (Objects.isNull(user) || Objects.isNull(leader)) {
+            throw new CustomException("用户或领导不存在");
+        }
+
+        Long userId = user.getUserId();
+        Long leaderId = leader.getUserId();
+
+        deviceService.save(device);
+
+        tevVo.device = null;
+        tevVo.user = null;
+        tevVo.workLeader = null;
+
+        TevInformation tev = jsonParser.convertValue(tevVo, TevInformation.class);
+        tev.setUserId(userId);
+        tev.setLeaderId(leaderId);
+        this.save(tev);
 
     }
 }

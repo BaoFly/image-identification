@@ -27,6 +27,8 @@ public interface DetailInformationMapper extends BaseMapper<DetailInformation> {
                                       @Param("detailInformationVo") DetailInformationVo detailInformationVo);
 
     void saveRecord(DetailInformationVo detailInformationVo);
+
+    DetailInformation getDetailById(Long detailId);
 }
 
 

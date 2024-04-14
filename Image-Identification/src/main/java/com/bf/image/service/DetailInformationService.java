@@ -23,4 +23,6 @@ public interface DetailInformationService extends IService<DetailInformation> {
     void saveRecord(DetailInformationVo detailInformationVo);
 
     ChartsVo chartsInfo(List<DetailInformation> records);
+
+    DetailInformation getDetailById(Long detailId);
 }

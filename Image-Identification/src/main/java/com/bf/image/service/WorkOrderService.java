@@ -1,10 +1,9 @@
 package com.bf.image.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.bf.image.pojo.DetailInformation;
 import com.bf.image.pojo.WorkOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.bf.image.vo.TevVo;
+import com.bf.image.vo.WorkOrderVo;
 
 /**
 * @author Gplus-033
@@ -13,5 +12,11 @@ import com.bf.image.vo.TevVo;
 */
 public interface WorkOrderService extends IService<WorkOrder> {
 
-    IPage<DetailInformation> pageVo(TevVo tevVo);
+    IPage<WorkOrderVo> pageVo(WorkOrderVo workOrderVo);
+
+    WorkOrderVo detail(WorkOrderVo workOrderVo);
+
+    void create(WorkOrderVo workOrderVo);
+
+    void review(WorkOrderVo workOrderVo);
 }

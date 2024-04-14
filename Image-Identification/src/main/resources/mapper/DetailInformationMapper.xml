@@ -200,4 +200,13 @@
             </if>
         </where>
     </select>
+
+    <select id="getDetailById" resultMap="BaseResultMap">
+        SELECT
+            `detail_id`,
+            `device_id`,
+            `image_id`
+        FROM `detail_information`
+        WHERE detail_id = #{detailId}
+    </select>
 </mapper>
