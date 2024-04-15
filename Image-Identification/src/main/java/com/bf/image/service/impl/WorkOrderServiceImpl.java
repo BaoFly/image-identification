@@ -60,9 +60,13 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         newPage.setSize(pageSize);
 
         List<UserInformation> userList = userService.list(Wrappers.lambdaQuery(UserInformation.class)
-                .like(StringUtils.isNotBlank(workOrderVo.getUsername()), UserInformation::getUsername, workOrderVo.getUsername())
+                .like(StringUtils.isNotBlank(workOrderVo.getUsername()), UserInformation::getUsername, workOrderVo.getUsername()));
+        List<UserInformation> leaderList = userService.list(Wrappers.lambdaQuery(UserInformation.class)
                 .like(StringUtils.isNotBlank(workOrderVo.getReviewName()), UserInformation::getUsername, workOrderVo.getReviewName()));
+
         List<Long> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+        List<Long> leaderIdList = leaderList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+
         List<UserInformation> allUserList = userService.list();
         Map<Long, String> userIdNameMap = allUserList.stream().collect(Collectors.toMap(
                 user -> user.getUserId(),
@@ -85,10 +89,10 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         Page<WorkOrder> page = this.page(newPage,
                 Wrappers.lambdaQuery(WorkOrder.class)
                         .in(CollectionUtils.isNotEmpty(userIdList), WorkOrder::getCreatorId, userIdList)
-                        .in(CollectionUtils.isNotEmpty(userIdList), WorkOrder::getReviewerId, userIdList)
+                        .in(CollectionUtils.isNotEmpty(userIdList), WorkOrder::getReviewerId, leaderIdList)
                         .eq(Objects.nonNull(workOrderVo.getStatus()), WorkOrder::getStatus, workOrderVo.getStatus())
                         .between(Objects.nonNull(startTime), WorkOrder::getCreateTime, startTime, endTime)
-                        .eq(flag, WorkOrder::getWorkOrderId, -1));
+                        .orderByDesc(WorkOrder::getCreateTime));
         CollectionType listType = jsonParser.getTypeFactory().constructCollectionType(ArrayList.class, WorkOrderVo.class);
         List<WorkOrderVo> list = jsonParser.convertValue(page.getRecords(), listType);
         Page<WorkOrderVo> objectPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
@@ -124,32 +128,47 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
         ImageInformation image = null;
         DeviceInformation device = null;
 
+        List<UserInformation> allUserList = userService.list();
+        Map<Long, String> userIdNameMap = allUserList.stream().collect(Collectors.toMap(
+                user -> user.getUserId(),
+                user -> user.getUsername()
+        ));
+
 
         if (type == 1) {
             DetailInformation detailInformation = detailService.getDetailById(detailId);
             deviceId = detailInformation.getDevice().getDeviceId();
             imageId = detailInformation.getImage().getImageId();
-
+            bizObj = detailInformation;
         } else if (type == 2) {
             TevInformation tevInformation = tevService.getById(detailId);
             deviceId = tevInformation.getDeviceId();
             imageId = tevInformation.getImageId();
+            bizObj = tevInformation;
         }
 
         device = deviceService.getById(deviceId);
-//        image = imageService.getById(imageId);
-//        String previewUrl = minIOUService.getPreviewUrl(image.getStorageName(), minIOConfig.getBucketName());
+        image = imageService.getById(imageId);
+        String previewUrl = minIOUService.getPreviewUrl(image.getStorageName(), minIOConfig.getBucketName());
 
         workOrderVo.setBizObj(bizObj);
         workOrderVo.setDevice(device);
-//        workOrderVo.setImage(image);
-//        workOrderVo.setPreviewUrl(previewUrl);
+        workOrderVo.setImage(image);
+        workOrderVo.setPreviewUrl(previewUrl);
+        workOrderVo.setUsername(userIdNameMap.get(workOrderVo.getCreatorId()));
+        workOrderVo.setReviewName(userIdNameMap.get(workOrderVo.getReviewerId()));
 
         return workOrderVo;
     }
 
     @Override
     public void create(WorkOrderVo workOrderVo) {
+        Long bizId = workOrderVo.getDetailId();
+
+        if (Objects.nonNull(this.getOne(Wrappers.lambdaQuery(WorkOrder.class).eq(WorkOrder::getDetailId, bizId)))) {
+            throw new CustomException("该记录已审核过，请勿重复提交");
+        }
+
         WorkOrder workOrder = null;
         if (workOrderVo.getType() == 1) {
             String username = workOrderVo.getUsername();

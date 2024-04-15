@@ -11,6 +11,7 @@ import com.bf.image.exception.CustomException;
 import com.bf.image.pojo.*;
 import com.bf.image.service.*;
 import com.bf.image.mapper.TevInformationMapper;
+import com.bf.image.utils.UUIDUtil;
 import com.bf.image.vo.ChartsVo;
 import com.bf.image.vo.SeriesData;
 import com.bf.image.vo.TevVo;
@@ -55,6 +56,9 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
     @Autowired
     private MinIOConfig minIOConfig;
 
+    @Autowired
+    private WorkOrderService workOrderService;
+
 
     @Override
     public IPage<TevVo> pageVo(TevVo tevVo) {
@@ -65,17 +69,28 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         newPage.setSize(pageSize);
 
         List<UserInformation> userList = userService.list(Wrappers.lambdaQuery(UserInformation.class)
-                .like(StringUtils.isNotBlank(tevVo.getUser().getUsername()), UserInformation::getUsername, tevVo.getUser().getUsername())
+                .like(StringUtils.isNotBlank(tevVo.getUser().getUsername()), UserInformation::getUsername, tevVo.getUser().getUsername()));
+        List<UserInformation> leaderList = userService.list(Wrappers.lambdaQuery(UserInformation.class)
                 .like(StringUtils.isNotBlank(tevVo.getWorkLeader().getUsername()), UserInformation::getUsername, tevVo.getWorkLeader().getUsername()));
+
         List<Long> userIdList = userList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+        List<Long> leaderIdList = leaderList.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+
         List<UserInformation> allUserList = userService.list();
         Map<Long, String> userIdNameMap = allUserList.stream().collect(Collectors.toMap(
                 user -> user.getUserId(),
                 user -> user.getUsername()
         ));
 
+        List<WorkOrder> orderList = workOrderService.list(Wrappers.lambdaQuery(WorkOrder.class)
+                .eq(WorkOrder::getType, 2)
+                .and(wrapper -> wrapper.isNull(WorkOrder::getReviewTime)
+                        .or()
+                        .isNotNull(WorkOrder::getFailTime))
+        );
+        List<Long> notCompleteRecordList = orderList.stream().map(order -> order.getDetailId()).collect(Collectors.toList());
+
         List<DeviceInformation> deviceList = deviceService.list(Wrappers.lambdaQuery(DeviceInformation.class)
-                .eq(Objects.nonNull(tevVo.getDevice().getDeviceId()), DeviceInformation::getDeviceId, tevVo.getDevice().getDeviceId())
                 .like(Objects.nonNull(tevVo.getDevice().getDeviceName()), DeviceInformation::getDeviceName, tevVo.getDevice().getDeviceName())
                 .eq(Objects.nonNull(tevVo.getDevice().getDeviceType()), DeviceInformation::getDeviceType, tevVo.getDevice().getDeviceType())
         );
@@ -104,8 +119,9 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         Page<TevInformation> page = this.page(newPage,
                 Wrappers.lambdaQuery(TevInformation.class)
                         .in(CollectionUtils.isNotEmpty(userIdList), TevInformation::getUserId, userIdList)
-                        .in(CollectionUtils.isNotEmpty(userIdList), TevInformation::getLeaderId, userIdList)
+                        .in(CollectionUtils.isNotEmpty(leaderIdList), TevInformation::getLeaderId, leaderIdList)
                         .in(CollectionUtils.isNotEmpty(deviceIdList), TevInformation::getDeviceId, deviceIdList)
+                        .notIn(CollectionUtils.isNotEmpty(notCompleteRecordList), TevInformation::getTevId, notCompleteRecordList)
                         .between(Objects.nonNull(startTime), TevInformation::getCreateTime, startTime, endTime)
                         .between(Objects.nonNull(occStartTime), TevInformation::getOccurrenceTime, occStartTime, occEndTime)
                         .eq(Objects.nonNull(tevVo.getQuasiPeakValue()), TevInformation::getQuasiPeakValue, tevVo.getQuasiPeakValue())
@@ -113,6 +129,8 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
                         .eq(Objects.nonNull(tevVo.getMinValue()), TevInformation::getMinValue, tevVo.getMinValue())
                         .eq(Objects.nonNull(tevVo.getPolarity()), TevInformation::getPolarity, tevVo.getPolarity())
                         .eq(Objects.nonNull(tevVo.getRepetitionRate()), TevInformation::getRepetitionRate, tevVo.getRepetitionRate())
+                        .eq(Objects.nonNull(tevVo.getTevId()), TevInformation::getTevId, tevVo.getTevId())
+                        .orderByDesc(TevInformation::getCreateTime)
         );
 
         CollectionType listType = jsonParser.getTypeFactory().constructCollectionType(ArrayList.class, TevVo.class);
@@ -260,6 +278,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         TevInformation tev = jsonParser.convertValue(tevVo, TevInformation.class);
         tev.setUserId(userId);
         tev.setLeaderId(leaderId);
+        tev.setDeviceId(device.getDeviceId());
         this.save(tev);
 
     }

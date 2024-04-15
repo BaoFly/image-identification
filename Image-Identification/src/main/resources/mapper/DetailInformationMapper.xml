@@ -39,12 +39,24 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        detail_id,username,work_leader_name,
-        device_id,image_id,power_supply_station,distribution_room_name,
-        substation_name,distribution_room_name,inspection_team,ambient_temp,
-        relative_humidity,central_humidity,max_temp,
-        min_temp,avg_temp,emission_temp,
-        create_time,update_time
+        detail_id,
+        power_supply_station,
+        substation_name,
+        distribution_room_name,
+        username,
+        work_leader_name,
+        inspection_team,
+        ambient_temp,
+        relative_humidity,
+        central_humidity,
+        feeder,
+        max_temp,
+        min_temp,
+        avg_temp,
+        reflected_temp,
+        create_time,
+        device_id,
+        image_id
     </sql>
 
     <insert id="insertBySelf" parameterType="com.bf.image.pojo.DetailInformation">
@@ -119,8 +131,8 @@
             <if test="detailInformationVo.workLeaderName != null">
                 AND work_leader_name like CONCAT('%', #{detailInformationVo.workLeaderName}, '%')
             </if>
-            <if test="detailInformationVo.device.deviceId != null">
-                AND dt.device_id = #{detailInformationVo.device.deviceId}
+            <if test="detailInformationVo.detailId != null">
+                AND dt.detail_id = #{detailInformationVo.detailId}
             </if>
             <if test="detailInformationVo.device.deviceType != null">
                 AND device_type = #{detailInformationVo.device.deviceType}
@@ -148,6 +160,12 @@
             </if>
             <if test="detailInformationVo.dateRange != null and detailInformationVo.dateRange.size() == 2">
                 AND dt.create_time BETWEEN #{detailInformationVo.dateRange[0]} AND #{detailInformationVo.dateRange[1]}
+            </if>
+            <if test="notCompleteRecordList != null and notCompleteRecordList.size() > 0">
+                AND dt.detail_id NOT IN
+                <foreach collection="notCompleteRecordList" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         ORDER BY create_time desc
@@ -203,9 +221,7 @@
 
     <select id="getDetailById" resultMap="BaseResultMap">
         SELECT
-            `detail_id`,
-            `device_id`,
-            `image_id`
+            <include refid="Base_Column_List"></include>
         FROM `detail_information`
         WHERE detail_id = #{detailId}
     </select>

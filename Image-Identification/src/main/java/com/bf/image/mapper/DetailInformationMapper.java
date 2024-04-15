@@ -24,7 +24,8 @@ public interface DetailInformationMapper extends BaseMapper<DetailInformation> {
     Long selectCount(@Param("detailInformationVo") DetailInformationVo detailInformationVo);
 
     IPage<DetailInformation> queryPage(@Param("page") Page<DetailInformation> page,
-                                      @Param("detailInformationVo") DetailInformationVo detailInformationVo);
+                                       @Param("detailInformationVo") DetailInformationVo detailInformationVo,
+                                       @Param("notCompleteRecordList") List<Long> notCompleteRecordList);
 
     void saveRecord(DetailInformationVo detailInformationVo);
 

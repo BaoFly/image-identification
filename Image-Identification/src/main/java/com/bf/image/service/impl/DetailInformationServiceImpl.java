@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.constant.CommonConstant;
@@ -11,10 +12,7 @@ import com.bf.image.exception.CustomException;
 import com.bf.image.mapper.DeviceInformationMapper;
 import com.bf.image.mapper.ImageInformationMapper;
 import com.bf.image.mapper.UserInformationMapper;
-import com.bf.image.pojo.DetailInformation;
-import com.bf.image.pojo.DeviceInformation;
-import com.bf.image.pojo.ImageInformation;
-import com.bf.image.pojo.UserInformation;
+import com.bf.image.pojo.*;
 import com.bf.image.service.*;
 import com.bf.image.mapper.DetailInformationMapper;
 import com.bf.image.utils.TimeUtil;
@@ -59,13 +57,13 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
     private DeviceInformationService deviceService;
 
     @Autowired
-    private ImageInformationService imageService;
-
-    @Autowired
     private DetailInformationMapper detailMapper;
 
     @Autowired
     private MinIOUService minIOUService;
+
+    @Autowired
+    private WorkOrderService workOrderService;
 
     @Override
     public IPage<DetailInformation> pageVo(DetailInformationVo detailInformationVo) {
@@ -75,16 +73,19 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         Page<DetailInformation> page = new Page<>();
         page.setCurrent(offset);
         page.setSize(pageSize);
-        IPage<DetailInformation> iPage = detailMapper.queryPage(page, detailInformationVo);
-        Long total = detailMapper.selectCount(detailInformationVo);
-        Long pages = 0L;
-        if (total % pageSize == 0 | total == 0) {
-            pages = total % pageSize;
-        } else {
-            pages = total / pageSize + 1;
-        }
+
+        List<WorkOrder> orderList = workOrderService.list(Wrappers.lambdaQuery(WorkOrder.class)
+                .eq(WorkOrder::getType, 1)
+                .and(wrapper -> wrapper.isNull(WorkOrder::getReviewTime)
+                            .or()
+                            .isNotNull(WorkOrder::getFailTime))
+        );
+        List<Long> notCompleteRecordList = orderList.stream().map(order -> order.getDetailId()).collect(Collectors.toList());
+
+        IPage<DetailInformation> iPage = detailMapper.queryPage(page, detailInformationVo, notCompleteRecordList);
+        Long total = Long.valueOf(iPage.getRecords().size());
+
         iPage.setTotal(total);
-        iPage.setPages(pages);
 
         List<DetailInformation> records = iPage.getRecords();
         for (DetailInformation record : records) {

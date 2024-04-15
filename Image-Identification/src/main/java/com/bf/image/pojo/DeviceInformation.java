@@ -28,7 +28,7 @@ public class DeviceInformation implements Serializable {
     /**
      * 设备表ID
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(value = "device_id", type = IdType.ASSIGN_ID)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long deviceId;
 
@@ -42,13 +42,13 @@ public class DeviceInformation implements Serializable {
      */
     private String deviceName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     /**
      * 创建时间
      */
     private Date createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     /**
      * 更新时间
      */
