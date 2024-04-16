@@ -4,11 +4,15 @@ server:
     context-path: /identification
   port: 6677
 
+token:
+  refreshTime: 604800
+  secretKey: baofly913.
+
 # 数据库连接信息
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3399/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://43.139.118.127:3399/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: Bao0319.
 
@@ -34,12 +38,12 @@ mybatis-plus:
 
 minio:
   #自己本地服务器 minio地址以及 账号密码，和桶名。
-  url: http:/minio:9000
+  url: http:/43.139.118.127:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: my-image-bucket
   defaultPictureName: default.jpg
-  publicAddr: minio
+  publicAddr: 43.139.118.127
 
 
 # 开启swagger
