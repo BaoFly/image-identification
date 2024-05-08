@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,37 +17,46 @@ import lombok.NoArgsConstructor;
 
 /**
  * 
- * @TableName user_information
+ * @TableName message_warning_record
  */
-@TableName(value ="user_information")
+@TableName(value ="message_warning_record")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInformation implements Serializable {
+public class MessageWarningRecord implements Serializable {
     /**
-     * 用户表ID
+     * 钉钉预警记录ID
      */
-    @TableId(value = "user_id", type = IdType.ASSIGN_ID)
-    private Long userId;
+    @TableId(value = "message_warning_record_id", type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long messageWarningRecordId;
 
     /**
-     * 用户名
+     * 钉钉预警ID
      */
-    @TableField(value = "username")
-    private String username;
+    @TableField(value = "message_warning_id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long messageWarningId;
 
     /**
-     * 用户密码
+     * 预警的业务ID
      */
-    @TableField(value = "password")
-    private String password;
+    @TableField(value = "message_biz_id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long messageBizId;
 
     /**
-     * 邮箱
+     * 1:红外图像 2：局部TEV
      */
-    @TableField(value = "email")
-    private String email;
+    @TableField(value = "message_type")
+    private Integer messageType;
+
+    /**
+     * 发送内容
+     */
+    @TableField(value = "message_content")
+    private String messageContent;
 
     /**
      * 创建时间
@@ -62,16 +73,10 @@ public class UserInformation implements Serializable {
     private Date updateTime;
 
     /**
-     * 是否已经被删除
+     * 逻辑删除标识
      */
     @TableField(value = "is_delete")
-    private Integer isDelete;
-
-    /**
-     * 性别
-     */
-    @TableField(value = "sex")
-    private Integer sex;
+    private byte[] isDelete;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

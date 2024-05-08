@@ -91,6 +91,8 @@ public class WorkOrderServiceImpl extends ServiceImpl<WorkOrderMapper, WorkOrder
                         .in(CollectionUtils.isNotEmpty(userIdList), WorkOrder::getCreatorId, userIdList)
                         .in(CollectionUtils.isNotEmpty(userIdList), WorkOrder::getReviewerId, leaderIdList)
                         .eq(Objects.nonNull(workOrderVo.getStatus()), WorkOrder::getStatus, workOrderVo.getStatus())
+                        .eq(Objects.nonNull(workOrderVo.getType()), WorkOrder::getType, workOrderVo.getType())
+                        .eq(Objects.nonNull(workOrderVo.getDetailId()), WorkOrder::getDetailId, workOrderVo.getDetailId())
                         .between(Objects.nonNull(startTime), WorkOrder::getCreateTime, startTime, endTime)
                         .orderByDesc(WorkOrder::getCreateTime));
         CollectionType listType = jsonParser.getTypeFactory().constructCollectionType(ArrayList.class, WorkOrderVo.class);

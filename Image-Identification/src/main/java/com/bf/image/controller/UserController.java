@@ -1,9 +1,11 @@
 package com.bf.image.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bf.image.constant.CommonConstant;
 import com.bf.image.pojo.UserInformation;
 import com.bf.image.service.UserInformationService;
 import com.bf.image.vo.ResultJson;
+import com.bf.image.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +16,6 @@ import java.util.Objects;
 
 @Api(tags = "UserInfo相关接口")
 @RestController
-@RequestMapping("/login")
 @CrossOrigin
 public class UserController {
 
@@ -22,7 +23,7 @@ public class UserController {
     private UserInformationService userService;
 
     @ApiOperation("User用户登录接口")
-    @PostMapping()
+    @PostMapping("/login")
     public ResultJson userLogin(@RequestParam("userName") String userName,
                                 @RequestParam("password") String password) {
         if (StringUtils.isBlank(userName.trim()) || StringUtils.isBlank(password.trim())) {
@@ -32,12 +33,23 @@ public class UserController {
         return ResultJson.success();
     }
 
+    @ApiOperation("User用户分页列表接口")
+    @PostMapping("user/pageVo")
+    public ResultJson userPageVo(@RequestBody UserVo userVo) {
+        Page<UserInformation> page = userService.userPageVo(userVo);
+        return ResultJson.success(page);
+    }
+
+    @ApiOperation("User用户删除接口")
+    @PostMapping("user/delete")
+    public ResultJson userDelete(@RequestBody UserVo userVo) {
+        userService.userDelete(userVo);
+        return ResultJson.success();
+    }
+
     @ApiOperation("新增一个User")
     @PostMapping("/add")
     public ResultJson userAdd(@RequestBody UserInformation userInformation) {
-        if (Objects.isNull(userInformation)) {
-            return ResultJson.fail(null);
-        }
         userService.add(userInformation);
         return ResultJson.success();
     }

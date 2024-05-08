@@ -206,7 +206,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
 
 
         SeriesData quasiPeakValueData = SeriesData.builder()
-                .name("Quasi Peak Value")
+                .name("局部TEV有效值(mV)")
                 .data(quasiPeakValueList)
                 .type("line")
                 .stack("Total")
@@ -214,7 +214,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         seriesDataList.add(0, quasiPeakValueData);
 
         SeriesData maxValueData = SeriesData.builder()
-                .name("Max Value")
+                .name("局部TEV最大值(mV)")
                 .data(maxValueList)
                 .type("line")
                 .stack("Total")
@@ -222,7 +222,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         seriesDataList.add(1, maxValueData);
 
         SeriesData minValueData = SeriesData.builder()
-                .name("Min Value")
+                .name("局部TEV最小值(mV)")
                 .data(minValueList)
                 .type("line")
                 .stack("Total")
@@ -230,7 +230,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         seriesDataList.add(2, minValueData);
 
         SeriesData repetitionRateData = SeriesData.builder()
-                .name("Repetition Rate")
+                .name("局部TEV频率(hZ)")
                 .data(repetitionRateList)
                 .type("line")
                 .stack("Total")
@@ -238,7 +238,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         seriesDataList.add(3, repetitionRateData);
 
         SeriesData polarityData = SeriesData.builder()
-                .name("Polarity")
+                .name("极性 0:负极性 1:正极性")
                 .data(polarityList)
                 .type("line")
                 .stack("Total")

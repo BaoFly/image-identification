@@ -2,14 +2,18 @@ package com.bf.image.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.constant.CommonConstant;
 import com.bf.image.exception.CustomException;
+import com.bf.image.pojo.TevInformation;
 import com.bf.image.pojo.UserInformation;
 import com.bf.image.service.UserInformationService;
 import com.bf.image.mapper.UserInformationMapper;
 import com.bf.image.utils.TimeUtil;
 import com.bf.image.utils.UUIDUtil;
+import com.bf.image.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,6 +93,38 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
         userInformation.setUpdateTime(updateTime);
 
         userMapper.insert(userInformation);
+
+    }
+
+    @Override
+    public Page<UserInformation> userPageVo(UserVo userVo) {
+        Integer pageSize = userVo.getPageSize();
+        Integer offset = (userVo.getCurrent() - 1) * pageSize;
+        Page<UserInformation> newPage = new Page<>();
+        newPage.setCurrent(offset);
+        newPage.setSize(pageSize);
+
+        Date startTime = null;
+        Date endTime = null;
+
+        if (userVo.getDateRange() != null && org.apache.commons.collections.CollectionUtils.isNotEmpty(userVo.getDateRange())) {
+            startTime = userVo.getDateRange().get(0);
+            endTime = userVo.getDateRange().get(1);
+        }
+
+        Page<UserInformation> page = this.page(newPage,
+                Wrappers.lambdaQuery(UserInformation.class)
+                        .like(Objects.nonNull(userVo.getUsername()), UserInformation::getUsername, userVo.getUsername())
+                        .between(Objects.nonNull(startTime), UserInformation::getCreateTime, startTime, endTime)
+                        .like(Objects.nonNull(userVo.getEmail()), UserInformation::getEmail, userVo.getEmail())
+                        .eq(Objects.nonNull(userVo.getSex()), UserInformation::getSex, userVo.getSex())
+                        .orderByDesc(UserInformation::getCreateTime)
+        );
+        return page;
+    }
+
+    @Override
+    public void userDelete(UserVo userVo) {
 
     }
 

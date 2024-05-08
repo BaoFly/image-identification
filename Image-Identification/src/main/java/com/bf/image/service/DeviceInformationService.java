@@ -1,7 +1,9 @@
 package com.bf.image.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bf.image.pojo.DeviceInformation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bf.image.vo.DeviceVo;
 
 /**
 * @author Administrator
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface DeviceInformationService extends IService<DeviceInformation> {
 
+    Page<DeviceInformation> devicePageVo(DeviceVo deviceVo);
 }

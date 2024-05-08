@@ -183,7 +183,7 @@ public class MinIOUServiceImpl implements MinIOUService {
                 InputStream inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(fileName).build());
                 IOUtils.copy(inputStream, response.getOutputStream());
             } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
+                throw new RuntimeException("无该图片信息，该图片为默认图片，请勿下载");
             }
         }
     }

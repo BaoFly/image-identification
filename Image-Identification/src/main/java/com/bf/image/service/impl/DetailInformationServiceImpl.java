@@ -169,7 +169,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
 
         SeriesData ambient = SeriesData.builder()
-                .name("Ambient Temp")
+                .name("环境温度(°C)")
                 .data(ambientTempList)
                 .type("line")
                 .stack("Total")
@@ -177,7 +177,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         seriesDataList.add(0, ambient);
 
         SeriesData humidity = SeriesData.builder()
-                .name("Relative Humidity")
+                .name("相对湿度(%)")
                 .data(relativeHumidityList)
                 .type("line")
                 .stack("Total")
@@ -185,7 +185,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         seriesDataList.add(1, humidity);
 
         SeriesData cHumidity = SeriesData.builder()
-                .name("Central Humidity")
+                .name("中心湿度(%)")
                 .data(centralHumidityList)
                 .type("line")
                 .stack("Total")
@@ -193,7 +193,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         seriesDataList.add(2, cHumidity);
 
         SeriesData maxTemp = SeriesData.builder()
-                .name("Max Temp")
+                .name("最高温度(°C)")
                 .data(maxTempList)
                 .type("line")
                 .stack("Total")
@@ -201,7 +201,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         seriesDataList.add(3, maxTemp);
 
         SeriesData minTemp = SeriesData.builder()
-                .name("Min Temp")
+                .name("最低温度(°C)")
                 .data(minTempList)
                 .type("line")
                 .stack("Total")
@@ -209,7 +209,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         seriesDataList.add(4, minTemp);
 
         SeriesData avgTemp = SeriesData.builder()
-                .name("Avg Temp")
+                .name("平均温度(°C)")
                 .data(avgTempList)
                 .type("line")
                 .stack("Total")
@@ -217,7 +217,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
         seriesDataList.add(5, avgTemp);
 
         SeriesData reflectedTemp = SeriesData.builder()
-                .name("Reflected Temp")
+                .name("反射温度(°C)")
                 .data(reflectTempList)
                 .type("line")
                 .stack("Total")
