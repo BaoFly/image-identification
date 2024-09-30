@@ -8,6 +8,7 @@ token:
   refreshTime: 604800
   secretKey: baofly913.
 
+
 # 数据库连接信息
 spring:
   datasource:
@@ -22,6 +23,26 @@ spring:
       enabled: true  #设置开启热部署，false即不开启热部署
       additional-paths: src/main/java #指定热部署的目录
       exclude: test/**  #指定目录不更新
+
+  redis:
+    port: 3131
+    host: 43.139.118.127
+    password: Bao0319.
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: 100ms
+
+  rabbitmq:
+    host: 43.139.118.127
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /bf
+    publisher-confirm-type: correlated
+    publisher-returns: true
 
 # 配置Mybatis-plus逻辑删除
 mybatis-plus:
