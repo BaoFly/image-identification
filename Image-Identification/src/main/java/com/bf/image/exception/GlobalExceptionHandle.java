@@ -1,6 +1,6 @@
 package com.bf.image.exception;
 
-import com.bf.image.vo.ResultJson;
+import com.bf.image.domin.ResultJson;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bf.image.mapper.UserInformationMapper">
 
-    <resultMap id="BaseResultMap" type="com.bf.image.pojo.UserInformation">
+    <resultMap id="BaseResultMap" type="com.bf.image.entity.UserInformation">
             <id property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>

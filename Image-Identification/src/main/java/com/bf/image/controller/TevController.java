@@ -1,13 +1,12 @@
 package com.bf.image.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.bf.image.pojo.DetailInformation;
-import com.bf.image.pojo.FileUploadBody;
-import com.bf.image.service.ImageInformationService;
-import com.bf.image.service.MinIOUService;
-import com.bf.image.service.TevInformationService;
-import com.bf.image.vo.*;
+import com.bf.image.domin.vo.ChartsVo;
+import com.bf.image.domin.vo.TevVo;
+import com.bf.image.service.impl.ImageInformationServiceImpl;
+import com.bf.image.service.impl.MinIOUServiceImpl;
+import com.bf.image.service.impl.TevInformationServiceImpl;
+import com.bf.image.domin.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,35 +23,28 @@ import java.util.List;
 public class TevController {
 
     @Autowired
-    private TevInformationService tevService;
+    private TevInformationServiceImpl tevService;
 
     @Autowired
-    private MinIOUService minIOUService;
+    private MinIOUServiceImpl minIOUService;
 
     @Autowired
-    private ImageInformationService imageService;
+    private ImageInformationServiceImpl imageService;
 
 
-    @ApiOperation("tev分页查询")
+    @ApiOperation("局放数据分页数据")
     @PostMapping("tev/pageVo")
     public ResultJson<?> pageVo(@RequestBody TevVo tevVo) {
         IPage<TevVo> page = tevService.pageVo(tevVo);
         return ResultJson.success(page);
     }
 
-    @ApiOperation("tev表格信息")
+    @ApiOperation("局放数据表格数据")
     @PostMapping("tev/charts")
     public ResultJson<?> chartsInfo(@RequestBody TevVo tevVo) {
         List<TevVo> records = tevService.pageVo(tevVo).getRecords();
         ChartsVo chartsVo = tevService.chartsInfo(records);
         return ResultJson.success(chartsVo);
-    }
-
-    @ApiOperation("tev上传所有相关信息")
-    @PostMapping("tev/save")
-    public ResultJson saveDetailInfo(@RequestBody TevVo tevVo) {
-        tevService.saveRecord(tevVo);
-        return ResultJson.success();
     }
 
 

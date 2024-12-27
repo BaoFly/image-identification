@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bf.image.mapper.InspectionWorkOrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.bf.image.entity.InspectionWorkOrder">
+            <id property="inspectionWorkOrderId" column="inspection_work_order_id" jdbcType="BIGINT"/>
+            <result property="dispatchName" column="dispatch_name" jdbcType="VARCHAR"/>
+            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+            <result property="inspectionStatus" column="inspection_status" jdbcType="TINYINT"/>
+            <result property="deviceName" column="device_name" jdbcType="TINYINT"/>
+            <result property="inspectionTeam" column="inspection_team" jdbcType="TINYINT"/>
+            <result property="detailId" column="detail_id" jdbcType="BIGINT"/>
+            <result property="tevId" column="tev_id" jdbcType="BIGINT"/>
+            <result property="feeder" column="feeder" jdbcType="TINYINT"/>
+            <result property="planStartTime" column="plan_start_time" jdbcType="TIMESTAMP"/>
+            <result property="planEndTime" column="plan_end_time" jdbcType="TIMESTAMP"/>
+            <result property="type" column="type" jdbcType="TINYINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="memo" column="memo" jdbcType="VARCHAR"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        inspection_work_order_id,dispatch_name,user_name,
+        inspection_status,device_name,inspection_team,
+        detail_id,tev_id,feeder,
+        plan_start_time,plan_end_time,type,
+        create_time,update_time,memo,
+        delete_flag
+    </sql>
+</mapper>

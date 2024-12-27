@@ -1,18 +1,9 @@
 package com.bf.image;
 
-import com.bf.image.pojo.MessageWarning;
 import com.bf.image.utils.MqUtils.RabbitSender;
 import org.junit.jupiter.api.Test;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import static com.bf.image.constant.RabbitConstant.TEST_DELAY_MQ;
 import static com.bf.image.constant.RabbitConstant.TEST_DIRECT_MQ;

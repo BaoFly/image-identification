@@ -1,11 +1,10 @@
 package com.bf.image.controller;
 
-import com.bf.image.service.ImageInformationService;
-import com.bf.image.service.MinIOUService;
-import com.bf.image.vo.FileVo;
-import com.bf.image.vo.ResultJson;
+import com.bf.image.service.impl.ImageInformationServiceImpl;
+import com.bf.image.service.impl.MinIOUServiceImpl;
+import com.bf.image.domin.vo.FileVo;
+import com.bf.image.domin.ResultJson;
 import io.swagger.annotations.Api;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class ImageController {
 
     @Autowired
-    private ImageInformationService imageService;
+    private ImageInformationServiceImpl imageService;
 
     @Autowired
-    private MinIOUService minIOUService;
-
-
+    private MinIOUServiceImpl minIOUService;
 
     @PostMapping("image/remove")
     public ResultJson removeImage(@RequestBody FileVo fileVo) {

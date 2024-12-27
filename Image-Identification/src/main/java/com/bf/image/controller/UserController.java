@@ -2,17 +2,15 @@ package com.bf.image.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bf.image.constant.CommonConstant;
-import com.bf.image.pojo.UserInformation;
-import com.bf.image.service.UserInformationService;
-import com.bf.image.vo.ResultJson;
-import com.bf.image.vo.UserVo;
+import com.bf.image.entity.UserInformation;
+import com.bf.image.service.impl.UserInformationServiceImpl;
+import com.bf.image.domin.ResultJson;
+import com.bf.image.domin.vo.UserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 @Api(tags = "UserInfo相关接口")
 @RestController
@@ -20,7 +18,7 @@ import java.util.Objects;
 public class UserController {
 
     @Autowired
-    private UserInformationService userService;
+    private UserInformationServiceImpl userService;
 
     @ApiOperation("User用户登录接口")
     @PostMapping("/login")

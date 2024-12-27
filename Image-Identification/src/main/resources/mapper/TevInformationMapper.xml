@@ -4,28 +4,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bf.image.mapper.TevInformationMapper">
 
-    <resultMap id="BaseResultMap" type="com.bf.image.pojo.TevInformation">
+    <resultMap id="BaseResultMap" type="com.bf.image.entity.TevInformation">
             <id property="tevId" column="tev_id" jdbcType="BIGINT"/>
+            <result property="imageId" column="image_id" jdbcType="BIGINT"/>
+            <result property="powerSupplyStation" column="power_supply_station" jdbcType="TINYINT"/>
+            <result property="distributionRoomName" column="distribution_room_name" jdbcType="TINYINT"/>
+            <result property="deviceType" column="device_type" jdbcType="TINYINT"/>
             <result property="quasiPeakValue" column="quasi_peak_value" jdbcType="DOUBLE"/>
             <result property="maxValue" column="max_value" jdbcType="DOUBLE"/>
             <result property="minValue" column="min_value" jdbcType="DOUBLE"/>
-            <result property="occurrenceTime" column="occurrence_time" jdbcType="TIMESTAMP"/>
-            <result property="polarity" column="polarity" jdbcType="INTEGER"/>
-            <result property="repetitionRate" column="repetition_rate" jdbcType="INTEGER"/>
+            <result property="inspectionDetail" column="inspection_detail" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="memo" column="memo" jdbcType="VARCHAR"/>
-            <result property="imageId" column="image_id" jdbcType="BIGINT"/>
-            <result property="deviceId" column="device_id" jdbcType="BIGINT"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
-            <result property="leaderId" column="leader_id" jdbcType="BIGINT"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        tev_id,quasi_peak_value,max_value,
-        min_value,occurrence_time,polarity,
-        repetition_rate,create_time,update_time,
-        memo,image_id,device_id,
-        user_id,leader_id
+        tev_id,image_id,power_supply_station,
+        distribution_room_name,device_type,quasi_peak_value,
+        max_value,min_value,inspection_detail,
+        create_time,update_time,memo,
+        delete_flag
     </sql>
 </mapper>

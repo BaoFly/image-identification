@@ -1,25 +1,21 @@
 package com.bf.image.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.constant.CommonConstant;
 import com.bf.image.exception.CustomException;
-import com.bf.image.pojo.TevInformation;
-import com.bf.image.pojo.UserInformation;
-import com.bf.image.service.UserInformationService;
+import com.bf.image.entity.UserInformation;
 import com.bf.image.mapper.UserInformationMapper;
 import com.bf.image.utils.TimeUtil;
 import com.bf.image.utils.UUIDUtil;
-import com.bf.image.vo.UserVo;
+import com.bf.image.domin.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -30,14 +26,12 @@ import java.util.Objects;
 * @createDate 2023-10-14 18:40:50
 */
 @Service
-public class UserInformationServiceImpl extends ServiceImpl<UserInformationMapper, UserInformation>
-    implements UserInformationService{
+public class UserInformationServiceImpl extends ServiceImpl<UserInformationMapper, UserInformation> {
 
     @Autowired
     private UserInformationMapper userMapper;
 
 
-    @Override
     public void checkUserInfo(String username, String password) {
 
         // 1 查数据库
@@ -65,7 +59,6 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
      * @param userInformation
      */
     @Transactional
-    @Override
     public void add(UserInformation userInformation) {
         // 拿到去除前后空格的用户名和密码
         String username = userInformation.getUsername().trim();
@@ -96,7 +89,6 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
 
     }
 
-    @Override
     public Page<UserInformation> userPageVo(UserVo userVo) {
         Integer pageSize = userVo.getPageSize();
         Integer offset = (userVo.getCurrent() - 1) * pageSize;
@@ -123,7 +115,6 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
         return page;
     }
 
-    @Override
     public void userDelete(UserVo userVo) {
 
     }

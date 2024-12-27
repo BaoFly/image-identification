@@ -1,6 +1,6 @@
 package com.bf.image.mapper;
 
-import com.bf.image.pojo.UserInformation;
+import com.bf.image.entity.UserInformation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

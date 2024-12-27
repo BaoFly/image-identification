@@ -1,6 +1,5 @@
 package com.bf.image.utils;
 
-import com.bf.image.vo.TevVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +24,10 @@ public class JsonParser {
         //fix 11-5 解决服务新增字段后，序列化出现问题导致大面积服务崩溃。
         jsonParser.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
         jsonParser.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+    }
+
+    public static <T> T convertValue(Object data, Class<T> clazz) {
+        return jsonParser.convertValue(data, clazz);
     }
 
     public static <T> List<T> getConvertList(String jsonString, Class<T> clazz) {

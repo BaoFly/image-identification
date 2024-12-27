@@ -1,6 +1,5 @@
 package com.bf.image;
 
-import com.bf.image.pojo.MessageWarning;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,15 +22,6 @@ public class RedisTest {
         redisTemplate.opsForValue().set("java:str", "test");
     }
 
-    @Test
-    void testRedis2() {
-        MessageWarning messageWarning = new MessageWarning()
-                .setMessageMemo("I Will back")
-                .setMessageName("Lark Warn")
-                .setMessageUrl("http")
-                .setCreateTime(new Date());
-        redisTemplate.opsForValue().set("java:str:1", messageWarning);
-    }
 
     @Test
     void testRedis3() {

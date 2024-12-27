@@ -5,12 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.bf.image.config.MinIOConfig;
 import com.bf.image.constant.CommonConstant;
 import com.bf.image.exception.CustomException;
-import com.bf.image.pojo.FileUploadBody;
-import com.bf.image.service.MinIOUService;
+import com.bf.image.entity.FileUploadBody;
 import com.bf.image.utils.UUIDUtil;
-import com.bf.image.vo.FileVo;
+import com.bf.image.domin.vo.FileVo;
 import io.minio.*;
-import io.minio.errors.*;
 import io.minio.http.Method;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -19,24 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
-public class MinIOUServiceImpl implements MinIOUService {
+public class MinIOUServiceImpl {
 
     private static final Logger log = LoggerFactory.getLogger(MinIOUServiceImpl.class);
 
@@ -86,7 +79,6 @@ public class MinIOUServiceImpl implements MinIOUService {
         }
     }
 
-    @Override
     public List<FileVo> uploadFile(FileUploadBody body){
         MultipartFile[] files = body.getFiles();
         if (Objects.nonNull(files) && files.length > 0) {
@@ -137,7 +129,6 @@ public class MinIOUServiceImpl implements MinIOUService {
         return Collections.emptyList();
     }
 
-    @Override
     public String getPreviewUrl(String fileName, String bucketName) {
         if (StringUtils.isNotBlank(fileName)) {
             bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();
@@ -170,7 +161,6 @@ public class MinIOUServiceImpl implements MinIOUService {
         }
     }
 
-    @Override
     public void downloadFile(HttpServletResponse response, String fileName, String bucketName) {
         if (StringUtils.isNotBlank(fileName)) {
             bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();

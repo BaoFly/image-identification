@@ -3,11 +3,9 @@ package com.bf.image.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.config.MinIOConfig;
-import com.bf.image.pojo.ImageInformation;
-import com.bf.image.service.ImageInformationService;
+import com.bf.image.entity.ImageInformation;
 import com.bf.image.mapper.ImageInformationMapper;
-import com.bf.image.service.MinIOUService;
-import com.bf.image.vo.FileVo;
+import com.bf.image.domin.vo.FileVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +21,7 @@ import java.util.List;
 * @createDate 2023-10-14 18:40:41
 */
 @Service
-public class ImageInformationServiceImpl extends ServiceImpl<ImageInformationMapper, ImageInformation>
-    implements ImageInformationService{
+public class ImageInformationServiceImpl extends ServiceImpl<ImageInformationMapper, ImageInformation> {
 
     private static final Logger log = LoggerFactory.getLogger(ImageInformationServiceImpl.class);
 
@@ -32,9 +29,8 @@ public class ImageInformationServiceImpl extends ServiceImpl<ImageInformationMap
     private MinIOConfig minIOConfig;
 
     @Autowired
-    private MinIOUService minIOUService;
+    private MinIOUServiceImpl minIOUService;
 
-    @Override
     public void saveImageByFileVo(List<FileVo> list) {
         log.info("保存上传的文件：【{}】", JSONObject.toJSONString(list));
         String bucketName = minIOConfig.getBucketName();
@@ -54,7 +50,6 @@ public class ImageInformationServiceImpl extends ServiceImpl<ImageInformationMap
         this.saveBatch(imageInformationList);
     }
 
-    @Override
     public void removeRecord(FileVo fileVo) {
         log.info("去除保存的记录FileVo：【{}】", JSONObject.toJSONString(fileVo));
         this.removeById(fileVo.getImageId());

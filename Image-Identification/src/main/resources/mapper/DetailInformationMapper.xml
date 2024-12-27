@@ -4,225 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bf.image.mapper.DetailInformationMapper">
 
-    <resultMap id="BaseResultMap" type="com.bf.image.pojo.DetailInformation">
+    <resultMap id="BaseResultMap" type="com.bf.image.entity.DetailInformation">
             <id property="detailId" column="detail_id" jdbcType="BIGINT"/>
-            <result property="powerSupplyStation" column="power_supply_station" jdbcType="VARCHAR"/>
-            <result property="substationName" column="substation_name" jdbcType="VARCHAR"/>
-            <result property="distributionRoomName" column="distribution_room_name" jdbcType="VARCHAR"/>
-            <result property="username" column="username" jdbcType="VARCHAR"/>
-            <result property="workLeaderName" column="work_leader_name" jdbcType="VARCHAR"/>
-            <result property="inspectionTeam" column="inspection_team" jdbcType="VARCHAR"/>
+            <result property="imageId" column="image_id" jdbcType="BIGINT"/>
+            <result property="powerSupplyStation" column="power_supply_station" jdbcType="TINYINT"/>
+            <result property="distributionRoomName" column="distribution_room_name" jdbcType="TINYINT"/>
+            <result property="deviceType" column="device_type" jdbcType="TINYINT"/>
             <result property="ambientTemp" column="ambient_temp" jdbcType="DOUBLE"/>
-            <result property="relativeHumidity" column="relative_humidity" jdbcType="DOUBLE"/>
-            <result property="centralHumidity" column="central_humidity" jdbcType="DOUBLE"/>
-            <result property="feeder" column="feeder" jdbcType="DOUBLE"/>
+            <result property="centralTemp" column="central_temp" jdbcType="DOUBLE"/>
             <result property="maxTemp" column="max_temp" jdbcType="DOUBLE"/>
             <result property="minTemp" column="min_temp" jdbcType="DOUBLE"/>
-            <result property="avgTemp" column="avg_temp" jdbcType="DOUBLE"/>
-            <result property="reflectedTemp" column="reflected_temp" jdbcType="DOUBLE"/>
+            <result property="inspectionDetail" column="inspection_detail" jdbcType="VARCHAR"/>
+            <result property="memo" column="memo" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <association property="device" javaType="com.bf.image.pojo.DeviceInformation">
-            <id property="deviceId" column="device_id" jdbcType="BIGINT"/>
-            <result property="deviceType" column="device_type" jdbcType="INTEGER"/>
-            <result property="deviceName" column="device_name" jdbcType="VARCHAR"/>
-            <!-- 其他 device 字段的映射 -->
-        </association>
-        <association property="image" javaType="com.bf.image.pojo.ImageInformation">
-            <id property="imageId" column="image_id" jdbcType="BIGINT"/>
-            <result property="imageName" column="image_name" jdbcType="VARCHAR"/>
-            <result property="bucketName" column="bucket_name" jdbcType="VARCHAR"/>
-            <result property="imageSize" column="image_size" jdbcType="BIGINT"/>
-            <result property="storageName" column="storage_name" jdbcType="VARCHAR"/>
-            <!-- 其他 image 字段的映射 -->
-        </association>
+            <result property="deleteFlag" column="delete_flag" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        detail_id,
-        power_supply_station,
-        substation_name,
-        distribution_room_name,
-        username,
-        work_leader_name,
-        inspection_team,
-        ambient_temp,
-        relative_humidity,
-        central_humidity,
-        feeder,
-        max_temp,
-        min_temp,
-        avg_temp,
-        reflected_temp,
-        create_time,
-        device_id,
-        image_id
+        detail_id,image_id,power_supply_station,
+        distribution_room_name,device_type,ambient_temp,
+        central_temp,max_temp,min_temp,
+        inspection_detail,memo,create_time,
+        update_time,delete_flag
     </sql>
-
-    <insert id="insertBySelf" parameterType="com.bf.image.pojo.DetailInformation">
-        insert into
-            detail_information
-            (detail_id, power_supply_station, substation_name, inspection_team, ambient_temp, relative_humidity, central_humidity, max_temp, min_temp, avg_temp, emission_temp, create_time, update_time, user_id, work_leader_id, device_id, image_id)
-        VALUES
-            (#{detailId}, #{powerSupplyStation}, #{substationName}, #{inspectionTeam}, #{ambientTemp}, #{relativeHumidity}, #{centralHumidity}, #{maxTemp}, #{minTemp}, #{avgTemp}, #{emissionTemp}, #{createTime}, #{updateTime}, #{user.userId}, #{workLeader.userId}, #{device.deviceId}, #{image.imageId})
-    </insert>
-
-    <insert id="saveRecord" parameterType="com.bf.image.vo.DetailInformationVo">
-        INSERT INTO `image_identification`.`detail_information` (
-            `detail_id`,
-            `device_id`,
-            `image_id`,
-            `username`,
-            `work_leader_name`,
-            `power_supply_station`,
-            `substation_name`,
-            `inspection_team`,
-            `distribution_room_name`,
-            `ambient_temp`,
-            `relative_humidity`,
-            `central_humidity`,
-            `feeder`,
-            `max_temp`,
-            `min_temp`,
-            `avg_temp`,
-            `reflected_temp`,
-            `create_time`
-        )
-        VALUES
-            (
-                #{detailId},
-                #{device.deviceId},
-                #{imageId},
-                #{username},
-                #{workLeaderName},
-                #{powerSupplyStation},
-                #{substationName},
-                #{distributionRoomName},
-                #{inspectionTeam},
-                #{ambientTemp},
-                #{relativeHumidity},
-                #{centralHumidity},
-                #{maxTemp},
-                #{minTemp},
-                #{avgTemp},
-                #{reflectedTemp},
-                #{feeder},
-                #{createTime}
-            );
-    </insert>
-
-    <select id="queryPage" resultMap="BaseResultMap">
-        SELECT
-            dt.*,
-                dv.device_name,
-            dv.device_type,
-            ii.image_name,
-            ii.bucket_name,
-            ii.image_size,
-            ii.storage_name
-        FROM
-            `detail_information` dt
-        LEFT JOIN device_information dv ON dt.device_id = dv.device_id
-        LEFT JOIN image_information ii ON dt.image_id = ii.image_id
-        <where>
-            <if test="detailInformationVo.username != null">
-                AND username like CONCAT('%', #{detailInformationVo.username}, '%')
-            </if>
-            <if test="detailInformationVo.workLeaderName != null">
-                AND work_leader_name like CONCAT('%', #{detailInformationVo.workLeaderName}, '%')
-            </if>
-            <if test="detailInformationVo.detailId != null">
-                AND dt.detail_id = #{detailInformationVo.detailId}
-            </if>
-            <if test="detailInformationVo.device.deviceType != null">
-                AND device_type = #{detailInformationVo.device.deviceType}
-            </if>
-            <if test="detailInformationVo.device.deviceName != null">
-                AND device_name like CONCAT('%', #{detailInformationVo.device.deviceName}, '%')
-            </if>
-            <if test="detailInformationVo.distributionRoomName != null">
-                AND distribution_room_name like CONCAT('%', #{detailInformationVo.distributionRoomName}, '%')
-            </if>
-            <if test="detailInformationVo.feeder != null">
-                AND feeder = #{detailInformationVo.feeder}
-            </if>
-            <if test="detailInformationVo.inspectionTeam != null">
-                AND inspection_team like CONCAT('%', #{detailInformationVo.inspectionTeam}, '%')
-            </if>
-            <if test="detailInformationVo.maxTemp != null">
-                AND max_temp &lt;= #{detailInformationVo.maxTemp}
-            </if>
-            <if test="detailInformationVo.powerSupplyStation != null">
-                AND power_supply_station like CONCAT('%', #{detailInformationVo.powerSupplyStation}, '%')
-            </if>
-            <if test="detailInformationVo.substationName != null">
-                AND substation_name like CONCAT('%', #{detailInformationVo.substationName}, '%')
-            </if>
-            <if test="detailInformationVo.dateRange != null and detailInformationVo.dateRange.size() == 2">
-                AND dt.create_time BETWEEN #{detailInformationVo.dateRange[0]} AND #{detailInformationVo.dateRange[1]}
-            </if>
-            <if test="notCompleteRecordList != null and notCompleteRecordList.size() > 0">
-                AND dt.detail_id NOT IN
-                <foreach collection="notCompleteRecordList" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-        </where>
-        ORDER BY create_time desc
-        LIMIT #{page.current},#{page.size}
-    </select>
-
-    <select id="selectCount" resultType="java.lang.Long">
-        SELECT
-            count(1)
-        FROM
-        `detail_information` dt
-        LEFT JOIN device_information dv ON dt.device_id = dv.device_id
-        LEFT JOIN image_information ii ON dt.image_id = ii.image_id
-        <where>
-            <if test="detailInformationVo.username != null">
-                AND username like CONCAT('%', #{detailInformationVo.username}, '%')
-            </if>
-            <if test="detailInformationVo.workLeaderName != null">
-                AND work_leader_name like CONCAT('%', #{detailInformationVo.workLeaderName}, '%')
-            </if>
-            <if test="detailInformationVo.device.deviceId != null">
-                AND dt.device_id = #{detailInformationVo.device.deviceId}
-            </if>
-            <if test="detailInformationVo.device.deviceType != null">
-                AND device_type = #{detailInformationVo.device.deviceType}
-            </if>
-            <if test="detailInformationVo.device.deviceName != null">
-                AND device_name like CONCAT('%', #{detailInformationVo.device.deviceName}, '%')
-            </if>
-            <if test="detailInformationVo.distributionRoomName != null">
-                AND distribution_room_name like CONCAT('%', #{detailInformationVo.distributionRoomName}, '%')
-            </if>
-            <if test="detailInformationVo.feeder != null">
-                AND feeder = #{detailInformationVo.feeder}
-            </if>
-            <if test="detailInformationVo.inspectionTeam != null">
-                AND inspection_team like CONCAT('%', #{detailInformationVo.inspectionTeam}, '%')
-            </if>
-            <if test="detailInformationVo.maxTemp != null">
-                AND max_temp &lt;= #{detailInformationVo.maxTemp}
-            </if>
-            <if test="detailInformationVo.powerSupplyStation != null">
-                AND power_supply_station like CONCAT('%', #{detailInformationVo.powerSupplyStation}, '%')
-            </if>
-            <if test="detailInformationVo.substationName != null">
-                AND substation_name like CONCAT('%', #{detailInformationVo.substationName}, '%')
-            </if>
-            <if test="detailInformationVo.dateRange != null and detailInformationVo.dateRange.size() == 2">
-                AND dt.create_time BETWEEN #{detailInformationVo.dateRange[0]} AND #{detailInformationVo.dateRange[1]}
-            </if>
-        </where>
-    </select>
-
-    <select id="getDetailById" resultMap="BaseResultMap">
-        SELECT
-            <include refid="Base_Column_List"></include>
-        FROM `detail_information`
-        WHERE detail_id = #{detailId}
-    </select>
 </mapper>
