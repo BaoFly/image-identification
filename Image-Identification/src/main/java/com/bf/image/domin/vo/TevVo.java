@@ -1,6 +1,7 @@
 package com.bf.image.domin.vo;
 
 import com.bf.image.entity.ImageInformation;
+import com.bf.image.entity.InspectionWorkOrder;
 import com.bf.image.entity.TevInformation;
 import com.bf.image.entity.UserInformation;
 import lombok.AllArgsConstructor;
@@ -16,19 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 public class TevVo extends TevInformation {
 
-    public UserInformation user;
+    private InspectionWorkOrder tevInspectionWorkOrder;
 
-    public UserInformation workLeader;
-
-    public ImageInformation image;
-
-    public List<Date> occurrenceTimeRange;
-
-    public List<Date> dateRange;
-
-    public Integer current;
-
-    public Integer pageSize;
+    private ImageInformation imageInformation;
 
     private String previewUrl;
 

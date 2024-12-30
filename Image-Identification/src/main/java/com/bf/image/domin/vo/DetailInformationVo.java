@@ -1,6 +1,8 @@
 package com.bf.image.domin.vo;
 
 import com.bf.image.entity.DetailInformation;
+import com.bf.image.entity.ImageInformation;
+import com.bf.image.entity.InspectionWorkOrder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,11 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 public class DetailInformationVo extends DetailInformation {
 
-    private Integer current;
+    private InspectionWorkOrder detailInspectionWorkOrder;
 
-    private Integer pageSize;
+    private ImageInformation imageInformation;
 
-    private List<Date> dateRange;
-
+    private String previewUrl;
 
 }

@@ -88,9 +88,9 @@ public class MinIOUServiceImpl {
                 try {
                     log.info("file: " + file);
                     Long size = Long.valueOf(file.getBytes().length);
-                    if (size >= 2* 1024 * 1024) {
-                        throw new CustomException(CommonConstant.UPLOAD_OVER_SIZE);
-                    }
+//                    if (size >= 2* 1024 * 1024) {
+//                        throw new CustomException(CommonConstant.UPLOAD_OVER_SIZE);
+//                    }
                     if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
                         minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
                     }
@@ -119,7 +119,7 @@ public class MinIOUServiceImpl {
                     fileVo.setImageId(String.valueOf(UUIDUtil.generateUUID()));
                     fileVo.setPreviewUrl(getPreviewUrl(fileName, bucketName));
                     resultList.add(fileVo);
-                }catch (Exception e){
+                } catch (Exception e) {
                     log.error("上传图片失败，File：【{}】", JSONObject.toJSONString(file));
                     throw new CustomException(e.getMessage());
                 }
@@ -129,19 +129,19 @@ public class MinIOUServiceImpl {
         return Collections.emptyList();
     }
 
-    public String getPreviewUrl(String fileName, String bucketName) {
-        if (StringUtils.isNotBlank(fileName)) {
+    public String getPreviewUrl(String storageName, String bucketName) {
+        if (StringUtils.isNotBlank(storageName)) {
             bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();
             String previewURL = "";
             try {
-                minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(fileName).build());
+                minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(storageName).build());
                 if (null != minIOConfig.getPreviewExpiry()){
-                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(fileName).expiry(minIOConfig.getPreviewExpiry(), TimeUnit.HOURS).build());
+                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(storageName).expiry(minIOConfig.getPreviewExpiry(), TimeUnit.HOURS).build());
                 }else {
-                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(fileName).build());
+                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(storageName).build());
                 }
             } catch (Exception e) {
-                log.error("在文件存储中无FileName：【{}】", fileName);
+                log.error("在文件存储中无FileName：【{}】", storageName);
                 previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(minIOConfig.getDefaultPictureName()).build());
             } finally {
                 try {
@@ -150,7 +150,7 @@ public class MinIOUServiceImpl {
                     String publicIpAddress = minIOConfig.getPublicAddr(); // Replace with your public IP address
                     URI modifiedUri = new URI(uri.getScheme(), uri.getUserInfo(), publicIpAddress, uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
                     String modifiedPreviewURL = modifiedUri.toString();
-                    log.info("FileName：【{}】，BucketName：【{}】，modifiedPreviewURL：【{}】", fileName, bucketName, modifiedPreviewURL);
+                    log.info("FileName：【{}】，BucketName：【{}】，modifiedPreviewURL：【{}】", storageName, bucketName, modifiedPreviewURL);
                     return modifiedPreviewURL;
                 } catch (URISyntaxException e) {
                     throw new RuntimeException(e);

@@ -1,6 +1,5 @@
 package com.bf.image.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bf.image.config.MinIOConfig;
 import com.bf.image.entity.FileUploadBody;
@@ -74,16 +73,15 @@ public class DetailController {
 
     @ApiOperation("红外图像数据分页查询")
     @PostMapping("detail/pageVo")
-    public ResultJson<?> pageVo(@RequestBody DetailInformationVo detailInformationVo) {
-        System.out.println(JSONObject.toJSONString(detailInformationVo));
-        IPage<DetailInformationVo> page = detailService.pageVo(detailInformationVo);
+    public ResultJson<?> pageVo(@RequestBody String queryData) {
+        IPage<DetailInformationVo> page = detailService.pageVo(queryData);
         return ResultJson.success(page);
     }
 
     @ApiOperation("表红外图像数据表格信息")
     @PostMapping("detail/charts")
-    public ResultJson<?> chartsInfo(@RequestBody DetailInformationVo detailInformationVo) {
-        List<DetailInformationVo> records = detailService.pageVo(detailInformationVo).getRecords();
+    public ResultJson<?> chartsInfo(@RequestBody String queryData) {
+        List<DetailInformationVo> records = detailService.pageVo(queryData).getRecords();
         ChartsVo chartsVo = detailService.chartsInfo(records);
         return ResultJson.success(chartsVo);
     }

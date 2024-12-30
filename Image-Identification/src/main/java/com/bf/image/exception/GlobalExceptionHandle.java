@@ -4,6 +4,7 @@ import com.bf.image.domin.ResultJson;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +16,7 @@ public class GlobalExceptionHandle {
      * @param request
      * @param e
      */
-    @ExceptionHandler(value = CustomException.class)
+    @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResultJson customRuntimeException(HttpServletRequest request, CustomException e){
         return ResultJson.fail(e.getMessage());

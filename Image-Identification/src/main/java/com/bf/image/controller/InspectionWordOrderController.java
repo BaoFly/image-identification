@@ -64,12 +64,22 @@ public class InspectionWordOrderController {
 
         JSONObject json = JSONObject.parseObject(data);
 
-        String businessId = json.get("businessId").toString();
-        String inspectionStatus = json.get("inspectionStatus").toString();
-        String deviceType = json.get("deviceType").toString();
-        String imageId = json.get("imageId").toString();
-        String powerSupplyStation = json.get("powerSupplyStation").toString();
-        String distributionRoomName = json.get("distributionRoomName").toString();
+        String businessId = null;
+        String inspectionStatus = null;
+        String deviceType = null;
+        String imageId = null;
+        String powerSupplyStation = null;
+        String distributionRoomName = null;
+        try {
+            businessId = json.get("businessId").toString();
+            inspectionStatus = json.get("inspectionStatus").toString();
+            deviceType = json.get("deviceType").toString();
+            imageId = json.get("imageId").toString();
+            powerSupplyStation = json.get("powerSupplyStation").toString();
+            distributionRoomName = json.get("distributionRoomName").toString();
+        } catch (Exception e) {
+            throw new CustomException("必要参数不能为空");
+        }
 
         InspectionWorkOrder inspectionWorkOrder = inspectionWorkOrderService.getById(businessId);
 
@@ -78,11 +88,20 @@ public class InspectionWordOrderController {
         if (type == 0) {
             Long detailId = inspectionWorkOrder.getDetailId();
 
-            String ambientTemp = json.get("ambientTemp").toString();
-            String centralTemp = json.get("centralTemp").toString();
-            String maxTemp = json.get("maxTemp").toString();
-            String minTemp = json.get("minTemp").toString();
-            String inspectionDetail = json.get("inspectionDetail").toString();
+            String ambientTemp = null;
+            String centralTemp = null;
+            String maxTemp = null;
+            String minTemp = null;
+            String inspectionDetail = null;
+            try {
+                ambientTemp = json.get("ambientTemp").toString();
+                centralTemp = json.get("centralTemp").toString();
+                maxTemp = json.get("maxTemp").toString();
+                minTemp = json.get("minTemp").toString();
+                inspectionDetail = json.get("inspectionDetail").toString();
+            } catch (Exception e) {
+                throw new CustomException("必要参数不能为空");
+            }
 
             DetailInformation detailInformation = DetailInformation.builder()
                     .detailId(detailId)
@@ -109,6 +128,7 @@ public class InspectionWordOrderController {
             String quasiPeakValue = json.get("quasiPeakValue").toString();
             String maxValue = json.get("maxValue").toString();
             String minValue = json.get("minValue").toString();
+            String inspectionDetail = json.get("inspectionDetail").toString();
 
             TevInformation tevInformation = TevInformation.builder()
                     .tevId(tevId)
@@ -119,7 +139,7 @@ public class InspectionWordOrderController {
                     .quasiPeakValue(Double.valueOf(quasiPeakValue))
                     .maxValue(Double.valueOf(maxValue))
                     .minValue(Double.valueOf(minValue))
-                    .inspectionDetail(inspectionStatus)
+                    .inspectionDetail(inspectionDetail)
                     .updateTime(new Date())
                     .build();
 
@@ -155,15 +175,28 @@ public class InspectionWordOrderController {
 
         JSONObject json = JSONObject.parseObject(data);
 
-        String businessId = json.get("businessId").toString();
-        String dispatchName = json.get("dispatchName").toString();
-        String inspectionTeam = json.get("inspectionTeam").toString();
-        String type = json.get("type").toString();
-        String userName = json.get("userName").toString();
-        String deviceName = json.get("deviceName").toString();
-        String feeder = json.get("feeder").toString();
-        String planStartTime = json.get("planStartTime").toString();
-        String planEndTime = json.get("planEndTime").toString();
+        String businessId = null;
+        String dispatchName = null;
+        String inspectionTeam = null;
+        String type = null;
+        String userName = null;
+        String deviceName = null;
+        String feeder = null;
+        String planStartTime = null;
+        String planEndTime = null;
+        try {
+            businessId = json.get("businessId").toString();
+            dispatchName = json.get("dispatchName").toString();
+            inspectionTeam = json.get("inspectionTeam").toString();
+            type = json.get("type").toString();
+            userName = json.get("userName").toString();
+            deviceName = json.get("deviceName").toString();
+            feeder = json.get("feeder").toString();
+            planStartTime = json.get("planStartTime").toString();
+            planEndTime = json.get("planEndTime").toString();
+        } catch (Exception e) {
+            throw new CustomException("必要参数不能为空");
+        }
 
         Long dataId = 0L;
 
