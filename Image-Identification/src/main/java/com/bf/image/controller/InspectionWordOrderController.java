@@ -3,6 +3,7 @@ package com.bf.image.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.func.Func;
+import cn.hutool.core.stream.CollectorUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -27,12 +28,10 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Api(tags = "巡检工单相关接口")
 @RestController
@@ -54,6 +53,84 @@ public class InspectionWordOrderController {
     public final String FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(FORMAT);
+
+    @PostMapping("inspectionWorkOrder/truncateAllTable")
+    @Transactional
+    public ResultJson truncateAllTable() {
+        List<TevInformation> tevInformationList = tevInformationService.list();
+
+        List<DetailInformation> detailInformationList = detailInformationService.list();
+
+        List<InspectionWorkOrder> inspectionWorkOrderList = inspectionWorkOrderService.list();
+
+        List<Long> detailIdList = detailInformationList.stream()
+                .map(DetailInformation::getDetailId)
+                .collect(Collectors.toList());
+
+        List<Long> tevIdList = tevInformationList.stream()
+                .map(TevInformation::getTevId)
+                .collect(Collectors.toList());
+
+        if (CollectionUtil.isNotEmpty(detailIdList)) {
+            boolean flag = detailInformationService.removeByIds(detailIdList);
+
+            if (!flag) {
+                return ResultJson.fail("删除红外数据出现异常");
+            }
+        }
+
+        if (CollectionUtil.isNotEmpty(tevIdList)) {
+            boolean flag = tevInformationService.removeByIds(tevIdList);
+
+            if (!flag) {
+                return ResultJson.fail("删除局放数据出现异常");
+            }
+        }
+
+        if (CollectionUtil.isNotEmpty(inspectionWorkOrderList)) {
+            List<Long> inspectionWorkOrderIdList = inspectionWorkOrderList.stream()
+                    .map(InspectionWorkOrder::getInspectionWorkOrderId)
+                    .collect(Collectors.toList());
+
+            boolean flag = inspectionWorkOrderService.removeByIds(inspectionWorkOrderIdList);
+
+            if (!flag) {
+                return ResultJson.fail("删除工单数据出现异常");
+            }
+        }
+
+        return ResultJson.success("清空所有表成功");
+    }
+
+    @PostMapping("inspectionWorkOrder/deleteById")
+    @Transactional
+    public ResultJson truncateAllTable(Long businessId) {
+        if (Objects.isNull(businessId)) {
+            return ResultJson.fail("必要参数不能为空");
+        }
+
+        InspectionWorkOrder inspectionWorkOrder = inspectionWorkOrderService.getById(businessId);
+
+        if (Objects.isNull(inspectionWorkOrder)) {
+            return ResultJson.fail("无对应的工单记录");
+        }
+
+        Integer type = inspectionWorkOrder.getType();
+
+        if (type == 0) {
+            Long detailId = inspectionWorkOrder.getDetailId();
+
+            detailInformationService.removeById(detailId);
+        } else {
+            Long tevId = inspectionWorkOrder.getTevId();
+
+            tevInformationService.removeById(tevId);
+        }
+
+        inspectionWorkOrderService.removeById(inspectionWorkOrder.getInspectionWorkOrderId());
+
+        return ResultJson.success("删除对应工单及其相关记录成功");
+    }
 
     @PostMapping("inspectionWorkOrder/updateData")
     @Transactional
@@ -78,7 +155,7 @@ public class InspectionWordOrderController {
             powerSupplyStation = json.get("powerSupplyStation").toString();
             distributionRoomName = json.get("distributionRoomName").toString();
         } catch (Exception e) {
-            throw new CustomException("必要参数不能为空");
+            return ResultJson.fail("必要参数不能为空");
         }
 
         InspectionWorkOrder inspectionWorkOrder = inspectionWorkOrderService.getById(businessId);
@@ -100,7 +177,7 @@ public class InspectionWordOrderController {
                 minTemp = json.get("minTemp").toString();
                 inspectionDetail = json.get("inspectionDetail").toString();
             } catch (Exception e) {
-                throw new CustomException("必要参数不能为空");
+                return ResultJson.fail("必要参数不能为空");
             }
 
             DetailInformation detailInformation = DetailInformation.builder()
@@ -120,7 +197,7 @@ public class InspectionWordOrderController {
             boolean flag = detailInformationService.updateById(detailInformation);
 
             if (!flag) {
-                throw new CustomException("更新红外图像信息出现异常");
+                return ResultJson.fail("更新红外图像信息出现异常");
             }
         } else if (type == 1) {
             Long tevId = inspectionWorkOrder.getTevId();
@@ -146,7 +223,7 @@ public class InspectionWordOrderController {
             boolean flag = tevInformationService.updateById(tevInformation);
 
             if (!flag) {
-                throw new CustomException("更新局放数据信息出现异常");
+                return ResultJson.fail("更新局放数据信息出现异常");
             }
         }
 
@@ -159,7 +236,7 @@ public class InspectionWordOrderController {
         boolean flag = inspectionWorkOrderService.updateById(update);
 
         if (!flag) {
-            throw new CustomException("更新工单数据出现异常");
+            return ResultJson.fail("更新工单数据出现异常");
         }
 
         return ResultJson.success("更新成功");
@@ -195,7 +272,7 @@ public class InspectionWordOrderController {
             planStartTime = json.get("planStartTime").toString();
             planEndTime = json.get("planEndTime").toString();
         } catch (Exception e) {
-            throw new CustomException("必要参数不能为空");
+            return ResultJson.fail("必要参数不能为空");
         }
 
         Long dataId = 0L;
@@ -211,7 +288,7 @@ public class InspectionWordOrderController {
             boolean save = detailInformationService.save(detail);
 
             if (!save) {
-                throw new CustomException("插入红外数据出现异常");
+                return ResultJson.fail("插入红外数据出现异常");
             }
 
             dataId = detail.getDetailId();
@@ -225,7 +302,7 @@ public class InspectionWordOrderController {
             boolean save = tevInformationService.save(tevInformation);
 
             if (!save) {
-                throw new CustomException("插入局放数据出现异常");
+                return ResultJson.fail("插入局放数据出现异常");
             }
 
             dataId = tevInformation.getTevId();
@@ -252,7 +329,7 @@ public class InspectionWordOrderController {
         boolean save = inspectionWorkOrderService.save(inspectionWorkOrder);
 
         if (!save) {
-            throw new CustomException("创建工单出现异常");
+            return ResultJson.fail("创建工单出现异常");
         }
 
         return ResultJson.success("创建工单成功");
