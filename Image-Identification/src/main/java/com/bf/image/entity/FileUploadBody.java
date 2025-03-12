@@ -25,4 +25,14 @@ public class FileUploadBody {
      * 自定义文件名
      */
     private String fileName;
+
+    /**
+     * 关联的数据ID
+     */
+    private String dataId;
+
+    /**
+     * 数据类型
+     */
+    private Integer type;
 }

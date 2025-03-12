@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bf.image.config.MinIOConfig;
 import com.bf.image.entity.FileUploadBody;
 import com.bf.image.service.impl.DetailInformationServiceImpl;
+import com.bf.image.service.impl.FileLatticeDataServiceImpl;
 import com.bf.image.service.impl.ImageInformationServiceImpl;
 import com.bf.image.service.impl.MinIOUServiceImpl;
 import com.bf.image.domin.vo.ChartsVo;
@@ -38,6 +39,9 @@ public class DetailController {
     @Autowired
     private ImageInformationServiceImpl imageService;
 
+    @Autowired
+    private FileLatticeDataServiceImpl latticeDataService;
+
     @ApiOperation("下载图片")
     @PostMapping("detail/download")
     public void downloadImage(@RequestParam("fileNameList") ArrayList<String> fileNameList,
@@ -69,6 +73,27 @@ public class DetailController {
         List<FileVo> list = minIOUService.uploadFile(body);
         imageService.saveImageByFileVo(list);
         return Objects.isNull(body.getFiles()) ? ResultJson.fail("上传文件不能为空") : ResultJson.success(list,"上传成功");
+    }
+
+    @ApiOperation("上传点阵文件")
+    @PostMapping("detail/uploadTxt")
+    public ResultJson uploadTxt(FileUploadBody body) {
+        List<FileVo> list = minIOUService.uploadFile(body);
+        latticeDataService.saveTxtByFileVo(list, body.getDataId(), body.getType());
+        return Objects.isNull(body.getFiles()) ? ResultJson.fail("上传文件不能为空") : ResultJson.success(list,"上传成功");
+    }
+
+    @ApiOperation("下载点阵文件")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PostMapping("detail/downloadTxt")
+    public void downloadTxt(String fileName,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
+        minIOUService.downloadFile(
+                response,
+                fileName,
+                minIOConfig.getBucketName()
+        );
     }
 
     @ApiOperation("红外图像数据分页查询")

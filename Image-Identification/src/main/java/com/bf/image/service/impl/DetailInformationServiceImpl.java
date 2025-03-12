@@ -6,14 +6,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.config.MinIOConfig;
-import com.bf.image.entity.DetailInformation;
-import com.bf.image.entity.ImageInformation;
-import com.bf.image.entity.InspectionWorkOrder;
-import com.bf.image.entity.TevInformation;
+import com.bf.image.domin.vo.FileLatticeDataVo;
+import com.bf.image.entity.*;
 import com.bf.image.mapper.DetailInformationMapper;
 import com.bf.image.domin.vo.ChartsVo;
 import com.bf.image.domin.vo.DetailInformationVo;
@@ -55,6 +54,9 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
     @Autowired
     private MinIOConfig minIOConfig;
+
+    @Autowired
+    private FileLatticeDataServiceImpl latticeDataService;
 
     public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -162,6 +164,11 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
         List<DetailInformationVo> detailInformationVoList = JsonParser.convertToList(detailInformationList, DetailInformationVo.class);
 
+        // 如果有则拿到点阵数据
+        List<FileLatticeData> fileLatticeDataList = latticeDataService.list(
+                Wrappers.lambdaQuery(FileLatticeData.class)
+                        .in(FileLatticeData::getDetailId, detailIdList));
+
         List<Long> imageIdList = detailInformationVoList.stream()
                 .filter(detailInformationVo -> Objects.nonNull(detailInformationVo.getImageId()))
                 .map(DetailInformation::getImageId)
@@ -196,6 +203,27 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
                     detailInformationVo.setImageInformation(imageInformation);
                     detailInformationVo.setPreviewUrl(previewUrl);
+                }
+            }
+
+            // 塞点阵数据
+            if (CollectionUtil.isNotEmpty(fileLatticeDataList)) {
+                List<FileLatticeData> latticeDataList = fileLatticeDataList.stream()
+                        .filter(fileLatticeData -> detailId.equals(fileLatticeData.getDetailId()))
+                        .collect(Collectors.toList());
+
+                if (CollectionUtil.isNotEmpty(latticeDataList)) {
+                    List<FileLatticeDataVo> fileLatticeDataVoList = JsonParser.convertToList(latticeDataList, FileLatticeDataVo.class);
+
+                    for (FileLatticeDataVo fileLatticeDataVo : fileLatticeDataVoList) {
+                        String fileStorageName = fileLatticeDataVo.getFileStorageName();
+
+                        String previewUrl = minIOUService.getPreviewUrl(fileStorageName, minIOConfig.getBucketName());
+
+                        fileLatticeDataVo.setPreviewUrl(previewUrl);
+                    }
+
+                    detailInformationVo.setFileLatticeDataVoList(fileLatticeDataVoList);
                 }
             }
 
