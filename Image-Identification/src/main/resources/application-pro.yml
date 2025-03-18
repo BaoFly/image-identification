@@ -43,6 +43,10 @@ spring:
     publisher-confirm-type: correlated
     publisher-returns: true
 
+  servlet:
+    multipart:
+      max-file-size: 100MB
+
 # 配置Mybatis-plus逻辑删除
 mybatis-plus:
   configuration:
