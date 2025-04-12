@@ -95,7 +95,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
 
         SeriesData ambient = SeriesData.builder()
-                .name("环境温度(°C)")
+                .name("平均温度(°C)")
                 .data(ambientTempList)
                 .type("line")
                 .stack("Total")
