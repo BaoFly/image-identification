@@ -145,15 +145,31 @@ public class MinIOUServiceImpl {
                 previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(minIOConfig.getDefaultPictureName()).build());
             } finally {
                 try {
-                    // Replace localhost with the public IP address
-                    URI uri = new URI(previewURL);
-                    String publicIpAddress = minIOConfig.getPublicAddr(); // Replace with your public IP address
-                    URI modifiedUri = new URI(uri.getScheme(), uri.getUserInfo(), publicIpAddress, uri.getPort(), uri.getPath(), uri.getQuery(), uri.getFragment());
+                    // 原始预览URL（内网地址，如 http://minio:9000/bucket/file.jpg）
+                    URI originalUri = new URI(previewURL);
+
+                    // 解析外网域名配置（publicAddr）
+                    URI publicUri = new URI(minIOConfig.getPublicAddr());
+                    String protocol = publicUri.getScheme();      // http 或 https
+                    String host = publicUri.getHost();            // your-public-domain.com
+                    int port = publicUri.getPort();              // 端口（如 9000 或 -1 表示默认）
+
+                    // 构建外网可访问的 URL
+                    URI modifiedUri = new URI(
+                            protocol,                // 使用穿透域名的协议（http/https）
+                            originalUri.getUserInfo(),
+                            host,                    // 穿透域名的 host（如 your-public-domain.com）
+                            port,                    // 端口（若为 -1 表示使用协议默认端口）
+                            originalUri.getPath(),   // 路径保持不变（如 /my-image-bucket/filename.jpg）
+                            originalUri.getQuery(),
+                            originalUri.getFragment()
+                    );
+
                     String modifiedPreviewURL = modifiedUri.toString();
-                    log.info("FileName：【{}】，BucketName：【{}】，modifiedPreviewURL：【{}】", storageName, bucketName, modifiedPreviewURL);
+                    log.info("外网预览地址: {}", modifiedPreviewURL);
                     return modifiedPreviewURL;
                 } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("URL 生成失败: " + e.getMessage());
                 }
             }
         } else {

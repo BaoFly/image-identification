@@ -63,7 +63,7 @@ minio:
   secretKey: minioadmin
   bucketName: my-image-bucket
   defaultPictureName: default.jpg
-  publicAddr: ttp://minio:9000
+  publicAddr: http://aifuturedxe.cn
 
 
 # 开启swagger
