@@ -145,28 +145,28 @@ public class MinIOUServiceImpl {
                 previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(minIOConfig.getDefaultPictureName()).build());
             } finally {
                 try {
-                    // 原始预览URL（内网地址，如 http://minio:9000/bucket/file.jpg）
+                    // 原始预览URL（包含签名参数，如 http://minio:9000/my-image-bucket/file.jpg?X-Amz-Signature=...）
                     URI originalUri = new URI(previewURL);
 
-                    // 解析外网域名配置（publicAddr）
+                    // 解析外网穿透地址（publicAddr）
                     URI publicUri = new URI(minIOConfig.getPublicAddr());
-                    String protocol = publicUri.getScheme();      // http 或 https
-                    String host = publicUri.getHost();            // your-public-domain.com
-                    int port = publicUri.getPort();              // 端口（如 9000 或 -1 表示默认）
+                    String protocol = publicUri.getScheme();
+                    String host = publicUri.getHost();
+                    int port = publicUri.getPort();
 
-                    // 构建外网可访问的 URL
+                    // 关键修改：保留原始 URL 的查询参数（包括签名信息）
                     URI modifiedUri = new URI(
-                            protocol,                // 使用穿透域名的协议（http/https）
-                            originalUri.getUserInfo(),
-                            host,                    // 穿透域名的 host（如 your-public-domain.com）
-                            port,                    // 端口（若为 -1 表示使用协议默认端口）
-                            originalUri.getPath(),   // 路径保持不变（如 /my-image-bucket/filename.jpg）
-                            originalUri.getQuery(),
+                            protocol,                // 使用外网协议（http/https）
+                            null,                    // 无用户信息
+                            host,                    // 外网域名（如 aifuturedxe.cn）
+                            port,                    // 外网端口（如 17433）
+                            originalUri.getPath(),   // 保留路径（如 /my-image-bucket/file.jpg）
+                            originalUri.getQuery(),  // 保留原始查询参数（如 X-Amz-Signature=...）
                             originalUri.getFragment()
                     );
 
                     String modifiedPreviewURL = modifiedUri.toString();
-                    log.info("外网预览地址: {}", modifiedPreviewURL);
+                    log.info("外网预览地址（含签名参数）: {}", modifiedPreviewURL);
                     return modifiedPreviewURL;
                 } catch (URISyntaxException e) {
                     throw new RuntimeException("URL 生成失败: " + e.getMessage());
