@@ -80,6 +80,12 @@ public class TevInformation implements Serializable {
     private String inspectionDetail;
 
     /**
+     * 局方类型，0：超声波，1：特高频
+     */
+    @TableField(value = "partial_type")
+    private Integer partialType;
+
+    /**
      * 创建时间
      */
     @TableField(value = "create_time")

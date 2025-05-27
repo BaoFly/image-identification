@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-@ControllerAdvice//标注未全局异常处理
+//@ControllerAdvice//标注未全局异常处理
 public class GlobalExceptionHandle {
 
     /**

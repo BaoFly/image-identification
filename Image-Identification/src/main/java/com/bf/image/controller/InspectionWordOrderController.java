@@ -261,6 +261,7 @@ public class InspectionWordOrderController {
         String feeder = null;
         String planStartTime = null;
         String planEndTime = null;
+        Object partialType = null;
         try {
             businessId = json.get("businessId").toString();
             dispatchName = json.get("dispatchName").toString();
@@ -271,6 +272,7 @@ public class InspectionWordOrderController {
             feeder = json.get("feeder").toString();
             planStartTime = json.get("planStartTime").toString();
             planEndTime = json.get("planEndTime").toString();
+            partialType = json.get("partialType");
         } catch (Exception e) {
             return ResultJson.fail("必要参数不能为空");
         }
@@ -297,6 +299,7 @@ public class InspectionWordOrderController {
                     .quasiPeakValue(0.0)
                     .maxValue(0.0)
                     .minValue(0.0)
+                    .partialType(Integer.valueOf(partialType.toString()))
                     .build();
 
             boolean save = tevInformationService.save(tevInformation);

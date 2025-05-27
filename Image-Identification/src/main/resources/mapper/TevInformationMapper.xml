@@ -10,6 +10,7 @@
             <result property="powerSupplyStation" column="power_supply_station" jdbcType="TINYINT"/>
             <result property="distributionRoomName" column="distribution_room_name" jdbcType="TINYINT"/>
             <result property="deviceType" column="device_type" jdbcType="TINYINT"/>
+            <result property="partialType" column="partial_type" jdbcType="TINYINT"/>
             <result property="quasiPeakValue" column="quasi_peak_value" jdbcType="DOUBLE"/>
             <result property="maxValue" column="max_value" jdbcType="DOUBLE"/>
             <result property="minValue" column="min_value" jdbcType="DOUBLE"/>
@@ -22,7 +23,7 @@
 
     <sql id="Base_Column_List">
         tev_id,image_id,power_supply_station,
-        distribution_room_name,device_type,quasi_peak_value,
+        distribution_room_name,device_type,quasi_peak_value,partial_type,
         max_value,min_value,inspection_detail,
         create_time,update_time,memo,
         delete_flag

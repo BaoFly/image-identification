@@ -91,7 +91,7 @@ public class TevInformationServiceImpl extends ServiceImpl<TevInformationMapper,
         seriesDataList.add(0, quasiPeakValueData);
 
         SeriesData maxValueData = SeriesData.builder()
-                .name("局部TEV最大值(V)")
+                .name("局放最大值")
                 .data(maxValueList)
                 .type("line")
                 .stack("Total")

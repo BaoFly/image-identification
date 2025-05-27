@@ -12,7 +12,7 @@ token:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.139.118.127:3399/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://mysql:3306/image_identification?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: Bao0319.
 
@@ -24,8 +24,8 @@ spring:
       exclude: test/**  #指定目录不更新
 
   redis:
-    port: 3131
-    host: 43.139.118.127
+    port: 6379
+    host: redis
     password: Bao0319.
     lettuce:
       pool:
@@ -35,7 +35,7 @@ spring:
         max-wait: 100ms
 
   rabbitmq:
-    host: 43.139.118.127
+    host: rabbitmq
     port: 5672
     username: admin
     password: admin
@@ -58,12 +58,12 @@ mybatis-plus:
 
 minio:
   #自己本地服务器 minio地址以及 账号密码，和桶名。
-  url: http:/43.139.118.127:9000
+  url: http://minio:9000
   accessKey: minioadmin
   secretKey: minioadmin
   bucketName: my-image-bucket
   defaultPictureName: default.jpg
-  publicAddr: 43.139.118.127
+  publicAddr: ttp://minio:9000
 
 
 # 开启swagger
