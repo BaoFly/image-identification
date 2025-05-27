@@ -255,6 +255,7 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
             Object deviceName = queryJsonObj.get("deviceName");
             Object inspectionTeam = queryJsonObj.get("inspectionTeam");
             Object feeder = queryJsonObj.get("feeder");
+            Object partialType = queryJsonObj.get("partialType");
             Object powerSupplyStation = queryJsonObj.get("powerSupplyStation");
             Object deviceType = queryJsonObj.get("deviceType");
             Object distributionRoomName = queryJsonObj.get("distributionRoomName");
@@ -296,6 +297,10 @@ public class DetailInformationServiceImpl extends ServiceImpl<DetailInformationM
 
                 if (distributionRoomName != null) {
                     dataInformationLambdaQueryWrapper.eq(TevInformation::getDistributionRoomName, Integer.valueOf(distributionRoomName.toString()));
+                }
+
+                if (partialType != null) {
+                    dataInformationLambdaQueryWrapper.eq(TevInformation::getPartialType, Integer.valueOf(partialType.toString()));
                 }
 
                 List<TevInformation> dataInformationList = tevInformationService.list(dataInformationLambdaQueryWrapper);
