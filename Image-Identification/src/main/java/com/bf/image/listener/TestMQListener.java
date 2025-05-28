@@ -14,7 +14,7 @@ import java.io.IOException;
 
 
 
-//@Component
+@Component
 @Slf4j
 public class TestMQListener {
 
