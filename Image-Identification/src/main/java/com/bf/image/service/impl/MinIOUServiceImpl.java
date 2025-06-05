@@ -130,51 +130,54 @@ public class MinIOUServiceImpl {
     }
 
     public String getPreviewUrl(String storageName, String bucketName) {
-        if (StringUtils.isNotBlank(storageName)) {
-            bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();
-            String previewURL = "";
-            try {
-                minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(storageName).build());
-                if (null != minIOConfig.getPreviewExpiry()){
-                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(storageName).expiry(minIOConfig.getPreviewExpiry(), TimeUnit.HOURS).build());
-                }else {
-                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(storageName).build());
-                }
-            } catch (Exception e) {
-                log.error("在文件存储中无FileName：【{}】", storageName);
-                previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(minIOConfig.getDefaultPictureName()).build());
-            } finally {
-                try {
-                    // 原始预览URL（包含签名参数，如 http://minio:9000/my-image-bucket/file.jpg?X-Amz-Signature=...）
-                    URI originalUri = new URI(previewURL);
-
-                    // 解析外网穿透地址（publicAddr）
-                    URI publicUri = new URI(minIOConfig.getPublicAddr());
-                    String protocol = publicUri.getScheme();
-                    String host = publicUri.getHost();
-                    int port = publicUri.getPort();
-
-                    // 关键修改：保留原始 URL 的查询参数（包括签名信息）
-                    URI modifiedUri = new URI(
-                            protocol,                // 使用外网协议（http/https）
-                            null,                    // 无用户信息
-                            host,                    // 外网域名（如 aifuturedxe.cn）
-                            port,                    // 外网端口（如 17433）
-                            originalUri.getPath(),   // 保留路径（如 /my-image-bucket/file.jpg）
-                            originalUri.getQuery(),  // 保留原始查询参数（如 X-Amz-Signature=...）
-                            originalUri.getFragment()
-                    );
-
-                    String modifiedPreviewURL = modifiedUri.toString();
-                    log.info("外网预览地址（含签名参数）: {}", modifiedPreviewURL);
-                    return modifiedPreviewURL;
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException("URL 生成失败: " + e.getMessage());
-                }
-            }
-        } else {
-            return null;
-        }
+//        if (StringUtils.isNotBlank(storageName)) {
+//            bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();
+//            String previewURL = "";
+//            try {
+//                minioClient.statObject(StatObjectArgs.builder().bucket(bucketName).object(storageName).build());
+//                if (null != minIOConfig.getPreviewExpiry()){
+//                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(storageName).expiry(minIOConfig.getPreviewExpiry(), TimeUnit.HOURS).build());
+//                }else {
+//                    previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(storageName).build());
+//                }
+//            } catch (Exception e) {
+//                log.error("在文件存储中无FileName：【{}】", storageName);
+//                previewURL = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucketName).object(minIOConfig.getDefaultPictureName()).build());
+//            } finally {
+//                try {
+//                    // 原始预览URL（包含签名参数，如 http://minio:9000/my-image-bucket/file.jpg?X-Amz-Signature=...）
+//                    URI originalUri = new URI(previewURL);
+//
+//                    // 解析外网穿透地址（publicAddr）
+//                    URI publicUri = new URI(minIOConfig.getPublicAddr());
+//                    String protocol = publicUri.getScheme();
+//                    String host = publicUri.getHost();
+//                    int port = publicUri.getPort();
+//
+//                    // 关键修改：保留原始 URL 的查询参数（包括签名信息）
+//                    URI modifiedUri = new URI(
+//                            protocol,                // 使用外网协议（http/https）
+//                            null,                    // 无用户信息
+//                            host,                    // 外网域名（如 aifuturedxe.cn）
+//                            port,                    // 外网端口（如 17433）
+//                            originalUri.getPath(),   // 保留路径（如 /my-image-bucket/file.jpg）
+//                            originalUri.getQuery(),  // 保留原始查询参数（如 X-Amz-Signature=...）
+//                            originalUri.getFragment()
+//                    );
+//
+//                    String modifiedPreviewURL = modifiedUri.toString();
+//                    log.info("外网预览地址（含签名参数）: {}", modifiedPreviewURL);
+//                    return modifiedPreviewURL;
+//                } catch (URISyntaxException e) {
+//                    throw new RuntimeException("URL 生成失败: " + e.getMessage());
+//                }
+//            }
+//        } else {
+//            return null;
+//        }
+        String publicAddr = minIOConfig.getPublicAddr();
+        bucketName = StringUtils.isNotBlank(bucketName) ? bucketName : minIOConfig.getBucketName();
+        return publicAddr + "/" + bucketName + "/" + storageName;
     }
 
     public void downloadFile(HttpServletResponse response, String fileName, String bucketName) {
