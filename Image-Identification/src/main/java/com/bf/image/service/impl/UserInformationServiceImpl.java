@@ -1,17 +1,22 @@
 package com.bf.image.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bf.image.constant.CommonConstant;
+import com.bf.image.domin.ResultJson;
 import com.bf.image.exception.CustomException;
 import com.bf.image.entity.UserInformation;
 import com.bf.image.mapper.UserInformationMapper;
+import com.bf.image.security.utils.JwtUtils;
 import com.bf.image.utils.TimeUtil;
 import com.bf.image.utils.UUIDUtil;
 import com.bf.image.domin.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -19,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author Administrator
@@ -31,27 +37,39 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
     @Autowired
     private UserInformationMapper userMapper;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
-    public void checkUserInfo(String username, String password) {
+
+    public ResultJson checkUserInfo(String username, String password) {
 
         // 1 查数据库
         LambdaQueryWrapper<UserInformation> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserInformation::getUsername, username);
-        List<UserInformation> users = userMapper.selectList(queryWrapper);
+        UserInformation user = userMapper.selectOne(queryWrapper);
 
         // 2 看是否有该用户名
-        if (CollectionUtils.isEmpty(users)) {
+        if (Objects.isNull(user)) {
             throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.USER_NOT_EXIST_MSG);
         }
 
-        // 3 看是否有该密码的用户
-        UserInformation userInformation = users.stream().filter(user -> user.getPassword().equals(password)).findFirst().orElse(null);
+        // 3 校验密码
+        String passwordData = user.getPassword();
 
-        // 如果没有该用户
-        if (Objects.isNull(userInformation)) {
-            throw new CustomException(CommonConstant.FAIL_CODE, CommonConstant.PASSWORD_ERROR);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        boolean matches = passwordEncoder.matches(password, passwordData);
+
+        // 如果有该用户
+        if (matches) {
+            String jwtToken = JwtUtils.getJwtToken(user.getUserId().toString(), username);
+
+            redisTemplate.opsForValue().set(jwtToken, JSONObject.toJSONString(user), 7, TimeUnit.DAYS);
+
+            return ResultJson.success("登录成功", jwtToken);
+        } else {
+            return ResultJson.fail("账号或密码错误");
         }
-
     }
 
     /**
@@ -113,10 +131,6 @@ public class UserInformationServiceImpl extends ServiceImpl<UserInformationMappe
                         .orderByDesc(UserInformation::getCreateTime)
         );
         return page;
-    }
-
-    public void userDelete(UserVo userVo) {
-
     }
 
 
