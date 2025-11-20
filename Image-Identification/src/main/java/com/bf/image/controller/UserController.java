@@ -26,12 +26,13 @@ public class UserController {
 
     @ApiOperation("User用户登录接口")
     @PostMapping("/login")
-    public ResultJson userLogin(@RequestBody UserInformation userInformation) {
-        if (StringUtils.isBlank(userInformation.getUsername().trim()) || StringUtils.isBlank(userInformation.getPassword().trim())) {
+    public ResultJson userLogin(@RequestParam("userName") String userName,
+                                @RequestParam("password") String password) {
+        if (StringUtils.isBlank(userName.trim()) || StringUtils.isBlank(password.trim())) {
             return ResultJson.fail(CommonConstant.USER_INFO_ERROR_MSG);
         }
 
-        return userService.checkUserInfo(userInformation.getUsername().trim(), userInformation.getPassword().trim());
+        return userService.checkUserInfo(userName.trim(), password.trim());
     }
 
     @ApiOperation("User用户分页列表接口")
