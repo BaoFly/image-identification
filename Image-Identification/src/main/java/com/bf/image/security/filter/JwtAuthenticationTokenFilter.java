@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -29,8 +30,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+        // 1. 获取请求路径，判断是否是 login 接口（直接放行，不验证 token）
+        String requestURI = httpServletRequest.getRequestURI();
+        if (antPathMatcher.match("/identification/login", requestURI)) {
+            // 直接让请求继续往下走（到 login 控制器）
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return; // 结束当前过滤器逻辑，不执行后续 token 验证
+        }
+
         // 从请求头获取token
         String token = httpServletRequest.getHeader("Authorization");
 
