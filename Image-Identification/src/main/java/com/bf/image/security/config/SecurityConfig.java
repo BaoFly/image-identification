@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         // 可选：如果只允许POST请求（推荐，登录一般用POST），可以更精确配置
                         // .antMatchers(HttpMethod.POST, "/identification/login").permitAll()
                         // 其他所有请求都需要认证
-                        .anyRequest().authenticated()
+//                        .anyRequest().authenticated()
                 )
                 // 3. 保持无状态会话（JWT模式必备）
                 .sessionManagement(session -> session
