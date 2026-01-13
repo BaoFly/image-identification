@@ -62,7 +62,7 @@ public class JsonParser {
         List<T> list = null;
         try {
             list = jsonParser.readValue(jsonString, listType);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new RuntimeException("转换出现异常");
         }
         return list;

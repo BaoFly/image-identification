@@ -130,10 +130,16 @@ public class RabbitSender implements RabbitTemplate.ConfirmCallback, RabbitTempl
 
         try {
             this.rabbitTemplate.convertAndSend(exchange, routingKey, message, (msg) -> {
+                // 1. 获取消息的属性对象（MessageProperties包含消息的所有元数据）
                 MessageProperties messageProperties = msg.getMessageProperties();
 
+                // 2. 设置消息唯一ID（关联correlationData的ID，用于消息确认、重试、排查）
                 messageProperties.setMessageId(id);
+
+                // 3. 把链路追踪ID放入消息头，消费端可获取
                 messageProperties.setHeader("trace_id", traceId[0]);
+
+                // 4. 设置消息延迟时间为0（表示不延迟，覆盖默认/全局延迟配置）
                 messageProperties.setDelay(delayTime);
 
                 return msg;
